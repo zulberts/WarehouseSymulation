@@ -18,6 +18,20 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataTransfer.h" />
+    <ClInclude Include="FileCreation.h" />
+    <ClInclude Include="Items.h" />
+    <ClInclude Include="Transactions.h" />
+    <ClInclude Include="Workers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DataTransfer.cpp" />
+    <ClCompile Include="FileCreation.cpp" />
+    <ClCompile Include="Items.cpp" />
+    <ClCompile Include="Transactions.cpp" />
+    <ClCompile Include="Workers.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

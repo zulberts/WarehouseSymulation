@@ -97,9 +97,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="test_DataTransfer.cpp" />
+    <ClCompile Include="test_FileCreation.cpp" />
+    <ClCompile Include="test_Items.cpp" />
+    <ClCompile Include="test_Transactions.cpp" />
+    <ClCompile Include="test_Workers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WarehouseLib\WarehouseLib.vcxproj">
+      <Project>{7fff5d40-c0ac-4a2d-8e4a-bf5a410e46af}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
