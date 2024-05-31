@@ -19,6 +19,7 @@ private:
     Customer customer;
 
 public:
+    Invoice(const std::string& invoiceNumber, const Person& seller, const Customer& customer);
     void GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) override;
     //TODO
 };

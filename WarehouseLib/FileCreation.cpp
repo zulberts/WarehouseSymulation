@@ -12,6 +12,10 @@ std::string Document::GetCurrentDateTime() {
 }
 
 
+Invoice::Invoice(const std::string& invoiceNumber, const Person& seller, const Customer& customer)
+    : invoiceNumber(invoiceNumber), seller(seller), customer(customer) {}
+
+
 void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) {
     std::ofstream file(path);
     if (file.is_open()) {
