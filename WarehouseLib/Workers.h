@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Items.h"
 
 class Person {
 protected:
@@ -9,8 +10,8 @@ protected:
 	int age;
 
 public:
-	Person(const std::string& name, const std::string& lastname, int age) : name(name), lastname(lastname), age(age) {}
-	virtual ~Person() {}
+	Person(const std::string& name, const std::string& lastname, int age);
+	virtual ~Person();
 
 	std::string getName() const;
 	std::string getLastName() const;
@@ -34,6 +35,8 @@ public:
 	int getSeniority() const;
 	std::string operator[](int index) const;
 	void addOpinion(const std::string& opinions);
+	std::string getOpinions() const;
+
 };
 
 class Manager : public Worker {
@@ -47,21 +50,21 @@ public:
 
 	void employWorker(Worker* worker);
 	void dismissWorker(Worker* worker);
-	void generateReport() const;
+	std::string generateReport() const;
 };
 
 class Customer : public Person {
 	//TODO
 
 protected:
-	std::vector<std::string> purchaseHistory;
+	std::vector<Product> purchaseHistory;
 
 public:
 	Customer(const std::string& name, const std::string& lastname, int age);
 
-	void addPurchase(const std::string& item);
+	void addPurchase(const Product& product);
 	virtual double calculateDiscount() const;
-	// getpurchaseHistory() const;
+	std::string getpurchaseHistory() const;
 
 };
 
@@ -69,14 +72,13 @@ class PrivatePerson : public Customer {
 	//TODO
 
 protected:
-	std::vector<std::string> purchasePreferences;
+	std::vector<Item> purchasePreferences;
 
 public:
 	PrivatePerson(const std::string& name, const std::string& lastname, int age);
 
-	void addPreference(const std::string& preference);
-	// with operator[]?
-	//std::string getPreference() const;
+	void addPreference(const Item& preference);
+	Item getPreference(ProductType type) const;
 	double calculateDiscount() const override;
 
 };
