@@ -7,6 +7,6 @@ class Product {
 	//TODO
 };
 
-class Items {
+class Item {
 	//TODO
 };
