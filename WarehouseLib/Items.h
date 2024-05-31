@@ -29,7 +29,7 @@ public:
 
 struct ShipmentDetail {
 	Item item;
-	int quantinty;
+	int quantity;
 	ShipmentDetail(const Item& item, int quantity);
 };
 
