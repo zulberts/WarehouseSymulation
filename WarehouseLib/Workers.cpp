@@ -22,7 +22,7 @@ int Person::getAge() const {
 
 
 Worker::Worker(const std::string& name, const std::string& lastname, int age,
-    const std::string& post, double salary, int seniority)
+    const Post post, double salary, int seniority)
     : Person(name, lastname, age), post(post), salary(salary), seniority(seniority) {}
 
 std::string Worker::getPost() const {

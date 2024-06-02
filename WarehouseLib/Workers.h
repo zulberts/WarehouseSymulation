@@ -18,35 +18,38 @@ public:
 	int getAge() const;
 };
 
+enum class Post {
+	PhysicalLabor,
+	WarehouseManagment,
+	Other
+};
+
 class Worker : public Person {
-	//TODO
 protected:
-	std::string post;
+	Post post;
 	double salary;
 	int seniority;
 	std::vector<std::string> opinions;
 
 public:
 	Worker(const std::string& name, const std::string& lastname, int age,
-		const std::string& post, double salary, int seniority);
+		const Post post, double salary, int seniority);
 
-	std::string getPost() const;
+	Post getPost() const;
 	double getSalary() const;
 	int getSeniority() const;
 	std::string operator[](int index) const;
 	void addOpinion(const std::string& opinions);
 	std::string getOpinions() const;
-
 };
 
 class Manager : public Worker {
-	//TODO
 protected:
 	std::vector<Worker*> subordinates;
 
 public:
 	Manager(const std::string& name, const std::string& lastname, int age,
-		const std::string& post, double salary, int seniority);
+		 double salary, int seniority);
 
 	void employWorker(Worker* worker);
 	void dismissWorker(Worker* worker);
