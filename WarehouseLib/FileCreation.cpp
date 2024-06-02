@@ -3,18 +3,23 @@
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 
 std::string Document::GetCurrentDateTime() {
     std::time_t t = std::time(nullptr);
+    std::tm tm;
     char date[100];
-    std::strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
+
+    if (localtime_s(&tm, &t)) {
+        throw std::runtime_error("Failed to get current time");
+    }
+
+    std::strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", &tm);
     return date;
 }
 
-
 Invoice::Invoice(const std::string& invoiceNumber, const Person& seller, const Customer& customer)
     : invoiceNumber(invoiceNumber), seller(seller), customer(customer) {}
-
 
 void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) {
     std::ofstream file(path);
@@ -48,9 +53,9 @@ void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, cons
     }
     else {
         std::cerr << "Unable to open file for saving invoice." << std::endl;
+        std::terminate();
     }
 }
-
 
 void Receipt::GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) {
     std::ofstream file(path);
@@ -76,6 +81,7 @@ void Receipt::GenerateDocument(const std::vector<ShipmentDetail>& products, cons
     }
     else {
         std::cerr << "Unable to open file for saving receipt." << std::endl;
+        std::terminate();
     }
 }
 

@@ -1,15 +1,14 @@
 #pragma once
 #include "Items.h"
+#include "Customers.h"
 #include <string>
 #include <vector>
 
 class Document {
 public:
-    //TODO
     virtual void GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) = 0;
     virtual ~Document() = default;
     std::string GetCurrentDateTime();
-
 };
 
 class Invoice : public Document {
@@ -21,7 +20,7 @@ private:
 public:
     Invoice(const std::string& invoiceNumber, const Person& seller, const Customer& customer);
     void GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) override;
-    //TODO
+    //TODO: Add any additional member functions needed
 };
 
 class Receipt : public Document {
@@ -31,5 +30,5 @@ private:
 public:
     void GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) override;
     void GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path, const std::string& paymentMethod);
-    //TODO
+    //TODO: Add any additional member functions needed
 };

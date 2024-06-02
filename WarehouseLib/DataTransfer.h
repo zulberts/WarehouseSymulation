@@ -1,19 +1,44 @@
 #pragma once
+#include <string>
+#include <exception>
 
 class DataManager {
 public:
-	virutal void saveData(const std::string& address);
-	virutal void loadData(const std::string& address);
+    virtual void saveData(const std::string& address) {
+        std::terminate();
+    }
+    virtual void loadData(const std::string& address) {
+        std::terminate();
+    }
+    virtual ~DataManager() = default;
 };
 
-class DataWorekres : public DataManager {
-	//TODO
+class DataWorkers : public DataManager {
+public:
+    void saveData(const std::string& address) override {
+        std::terminate();
+    }
+    void loadData(const std::string& address) override {
+        std::terminate();
+    }
 };
 
 class DataTransactions : public DataManager {
-	//TODO
+public:
+    void saveData(const std::string& address) override {
+        std::terminate();
+    }
+    void loadData(const std::string& address) override {
+        std::terminate();
+    }
 };
 
 class DataItems : public DataManager {
-	//TODO
+public:
+    void saveData(const std::string& address) override {
+        std::terminate();
+    }
+    void loadData(const std::string& address) override {
+        std::terminate();
+    }
 };

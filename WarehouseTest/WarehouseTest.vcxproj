@@ -100,6 +100,7 @@
     <ClCompile Include="test_DataTransfer.cpp" />
     <ClCompile Include="test_FileCreation.cpp" />
     <ClCompile Include="test_Items.cpp" />
+    <ClCompile Include="test_Person.cpp" />
     <ClCompile Include="test_Transactions.cpp" />
     <ClCompile Include="test_Workers.cpp" />
   </ItemGroup>
