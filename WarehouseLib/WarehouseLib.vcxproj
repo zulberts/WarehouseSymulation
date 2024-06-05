@@ -25,6 +25,7 @@
     <ClInclude Include="Items.h" />
     <ClInclude Include="Person.h" />
     <ClInclude Include="Transactions.h" />
+    <ClInclude Include="Warehouse.h" />
     <ClInclude Include="Workers.h" />
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +35,7 @@
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="Person.cpp" />
     <ClCompile Include="Transactions.cpp" />
+    <ClCompile Include="Warehouse.cpp" />
     <ClCompile Include="Workers.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
