@@ -34,7 +34,7 @@ std::string Worker::getOpinions() const {
     std::ostringstream oss;
     oss << "Opinions:\n";
     for (size_t i = 0; i < opinions.size(); ++i) {
-        oss << i + 1 << ". " << opinions[i] << "\n";
+        oss << std::to_string(i + 1) + ". " + opinions[i] + "\n";
     }
     return oss.str();
 }

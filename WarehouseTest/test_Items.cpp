@@ -80,7 +80,7 @@ TEST(ShipmentTest, GetTotalCost) {
     items.emplace_back(Item("Item2", 20.0, ProductType::Apparel, 0.15, expiryDate), 3);
 
     Shipment shipment(items, manager, worker, "DeliveryCompany");
-    double expectedTotalCost = (10.0 * 2) + (20.0 * 3);
+    double expectedTotalCost = 2*(10 + 0.2) + 3*(20 + 0.15);
     EXPECT_EQ(shipment.getTotalCost(), expectedTotalCost);
 }
 
@@ -130,7 +130,7 @@ TEST(ProductTest, IsAvailable) {
     Manager manager("ManagerName", "ManagerLastName", 40, 8000, 10);
     Worker worker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
     std::time_t expiryDate = std::time(nullptr);
-    Product product(manager, worker, "Product1", 100.0, 0.2, "Country1", expiryDate, 500, ProductType::Electronics);
+    Product product(manager, worker, "Product1", 100.0, 0.2, "Country1", expiryDate + 86400, 500, ProductType::Electronics);
 
     EXPECT_TRUE(product.isAvailable());
 

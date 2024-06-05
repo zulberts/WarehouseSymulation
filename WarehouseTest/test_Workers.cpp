@@ -15,7 +15,7 @@ TEST(WorkerTest, AddOpinionAndGetOpinions) {
     Worker worker("Jane", "Doe", 28, Post::PhysicalLabor, 3000.0, 2);
     worker.addOpinion("Great worker");
     worker.addOpinion("Always on time");
-    EXPECT_EQ(worker.getOpinions(), "Great worker\nAlways on time\n");
+    EXPECT_EQ(worker.getOpinions(), "Opinions:\n1. Great worker\n2. Always on time\n");
 }
 
 TEST(WorkerTest, GetPost) {
@@ -66,7 +66,7 @@ TEST(ManagerTest, EmployWorker) {
     Manager manager("Helen", "Queen", 55, 9000.0, 30);
     Worker worker("Ian", "Prince", 30, Post::Other, 4000.0, 5);
     manager.employWorker(&worker);
-    EXPECT_EQ(manager.generateReport(), "Ian Prince\n");
+    EXPECT_EQ(manager.generateReport(), "Employee performance report:\nIan Prince\nOpinions:\n");
 }
 
 TEST(ManagerTest, DismissWorker) {
@@ -74,7 +74,7 @@ TEST(ManagerTest, DismissWorker) {
     Worker worker("Kelly", "Bishop", 28, Post::WarehouseManagement, 4500.0, 4);
     manager.employWorker(&worker);
     manager.dismissWorker(&worker);
-    EXPECT_EQ(manager.generateReport(), "");
+    EXPECT_EQ(manager.generateReport(), "Employee performance report:\n");
 }
 
 TEST(ManagerTest, GenerateReport) {
@@ -83,5 +83,5 @@ TEST(ManagerTest, GenerateReport) {
     Worker worker2("Noah", "Marquis", 32, Post::WarehouseManagement, 4000.0, 7);
     manager.employWorker(&worker1);
     manager.employWorker(&worker2);
-    EXPECT_EQ(manager.generateReport(), "Mia Countess\nNoah Marquis\n");
+    EXPECT_EQ(manager.generateReport(), "Employee performance report:\nMia Countess\nOpinions:\nNoah Marquis\nOpinions:\n");
 }

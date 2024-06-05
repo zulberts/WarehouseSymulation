@@ -73,6 +73,7 @@ std::time_t Product::getSaleDate() const {
 
 void Product::setSaleDate(std::time_t newSaleDate) {
     sale_date = newSaleDate;
+    validity_term = sale_date;
 }
 
 bool Product::isAvailable() const {
