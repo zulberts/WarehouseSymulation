@@ -47,3 +47,12 @@ std::vector<Product*> Warehouse::searchByType(ProductType type) const {
     }
     return result;
 }
+
+
+void Warehouse::addTransaction(const Transaction& transaction) {
+    transactions.push_back(transaction);
+}
+
+const std::vector<Transaction>& Warehouse::getTransactions() const {
+    return transactions;
+}
