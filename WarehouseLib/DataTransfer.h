@@ -1,6 +1,15 @@
 #pragma once
-#include <string>
-#include <exception>
+#include <iostream>
+#include "Warehouse.h"
+
+
+
+class DataTransfer {
+public:
+    static void saveToJson(const Warehouse& warehouse, const std::string& filename);
+    static Warehouse loadFromJson(const std::string& filename);
+};
+
 
 class DataManager {
 public:

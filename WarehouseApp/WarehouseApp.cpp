@@ -1,20 +1,32 @@
-// WarehouseApp.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <memory>
+#include <ctime>
+#include "../WarehouseLib/DataTransfer.h"
+#include "../WarehouseLib/Warehouse.h"
+#include "../WarehouseLib/Items.h"
+#include "../WarehouseLib/Workers.h"
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int main() {
+    Manager manager1("John", "Doe", 45, 50000, 10);
+    Worker worker1("Jane", "Smith", 30, Post::PhysicalLabor, 30000, 5);
+
+    auto now = std::time(nullptr);
+    std::unique_ptr<Product> product1(new Product(manager1, worker1, "Product1", 100.0, 20.0, "USA", now + 3600 * 24 * 30, 1000, ProductType::Perishable));
+    std::unique_ptr<Product> product2(new Product(manager1, worker1, "Product2", 200.0, 40.0, "Canada", now + 3600 * 24 * 60, 2000, ProductType::NonePerishable));
+    std::unique_ptr<Product> product3(new Product(manager1, worker1, "Product3", 300.0, 60.0, "UK", now + 3600 * 24 * 90, 3000, ProductType::Electronics));
+    std::unique_ptr<Product> product4(new Product(manager1, worker1, "Product4", 400.0, 80.0, "Germany", now + 3600 * 24 * 120, 4000, ProductType::Apparel));
+    std::unique_ptr<Product> product5(new Product(manager1, worker1, "Product5", 500.0, 100.0, "France", now + 3600 * 24 * 150, 5000, ProductType::Perishable));
+
+    Warehouse warehouse;
+    warehouse.addProduct(std::move(product1));
+    warehouse.addProduct(std::move(product2));
+    warehouse.addProduct(std::move(product3));
+    warehouse.addProduct(std::move(product4));
+    warehouse.addProduct(std::move(product5));
+
+    DataTransfer::saveToJson(warehouse, "warehouse.json");
+
+    std::cout << "Produkty zosta³y zapisane do pliku warehouse.json" << std::endl;
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

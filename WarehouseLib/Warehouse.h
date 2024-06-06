@@ -11,6 +11,7 @@ private:
 
 public:
     void addProduct(std::unique_ptr<Product> product);
+    const std::vector<std::unique_ptr<Product>>& getProducts() const;
 
     std::vector<Product*> searchByName(const std::string& name) const;
     std::vector<Product*> searchByManufacturer(const std::string& manufacturer) const;

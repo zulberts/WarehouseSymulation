@@ -4,6 +4,10 @@ void Warehouse::addProduct(std::unique_ptr<Product> product) {
     products.push_back(std::move(product));
 }
 
+const std::vector<std::unique_ptr<Product>>& Warehouse::getProducts() const {
+    return products;
+}
+
 std::vector<Product*> Warehouse::searchByName(const std::string& name) const {
     std::vector<Product*> result;
     for (const auto& product : products) {
