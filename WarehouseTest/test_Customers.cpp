@@ -8,6 +8,12 @@ TEST(CustomerTest, ConstructorAndGetters) {
     EXPECT_EQ(customer.getAge(), 30);
 }
 
+TEST(CustomerTest, GetEmptyPurchaseHistory) {
+    Customer customer("Jan", "Kowalski", 30);
+    std::string expected_history = "Purchase history:\n";
+    EXPECT_EQ(customer.getPurchaseHistory(), expected_history);
+}
+
 TEST(CustomerTest, AddPurchaseAndGetPurchaseHistory) {
     Customer customer("Ewa", "Grzyb", 28);
     Product product1(Manager("ManagerName", "ManagerLastName", 40, 8000, 10),

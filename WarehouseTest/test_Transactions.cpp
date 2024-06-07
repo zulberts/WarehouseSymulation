@@ -92,3 +92,69 @@ TEST(TransactionRegisterTest, FilterByCustomerNoMatches) {
     auto filteredByCustomer = registr.filterByCustomer(customer2);
     EXPECT_TRUE(filteredByCustomer.empty());
 }
+
+TEST(TransactionRegisterTest, FilterByCustomer) {
+    TransactionRegister registr;
+    Manager manager("John", "Doe", 45, 5000, 20);
+    Worker worker("Jane", "Smith", 30, Post::WarehouseManagement, 3000, 5);
+    Product product(manager, worker, "TestProduct", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics);
+    auto customer1 = std::make_shared<Customer>("Alice", "Johnson", 35);
+    auto customer2 = std::make_shared<Customer>("Bob", "Smith", 40);
+
+    auto transaction1 = std::make_unique<Transaction>(product, 2, 200.0, worker, customer1);
+    auto transaction2 = std::make_unique<Transaction>(product, 3, 300.0, worker, customer2);
+
+    registr.addTransaction(std::move(transaction1));
+    registr.addTransaction(std::move(transaction2));
+
+    auto result = registr.filterByCustomer(customer1);
+
+    EXPECT_EQ(result.size(), 1);
+    EXPECT_EQ(result[0]->getCustomer()->getName(), "Alice");
+}
+
+TEST(TransactionTest, CancelTransaction) {
+    Manager manager("John", "Doe", 45, 5000, 20);
+    Worker worker("Jane", "Smith", 30, Post::WarehouseManagement, 3000, 5);
+    Product product(manager, worker, "TestProduct", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics);
+    auto customer = std::make_shared<Customer>("Alice", "Johnson", 35);
+
+    Transaction transaction(product, 2, 200.0, worker, customer);
+    transaction.cancel();
+
+    EXPECT_TRUE(transaction.isCanceled());
+}
+
+TEST(TransactionRegisterTest, AddTransaction) {
+    TransactionRegister registr;
+    Manager manager("John", "Doe", 45, 5000, 20);
+    Worker worker("Jane", "Smith", 30, Post::WarehouseManagement, 3000, 5);
+    Product product(manager, worker, "TestProduct", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics);
+    auto customer = std::make_shared<Customer>("Alice", "Johnson", 35);
+
+    auto transaction = std::make_unique<Transaction>(product, 2, 200.0, worker, customer);
+    registr.addTransaction(std::move(transaction));
+
+    EXPECT_EQ(registr.getTransactions().size(), 1);
+    EXPECT_EQ(registr.getCanceledTransactions().size(), 0);
+}
+
+TEST(TransactionRegisterTest, RemoveCanceledTransactions) {
+    TransactionRegister registr;
+    Manager manager("John", "Doe", 45, 5000, 20);
+    Worker worker("Jane", "Smith", 30, Post::WarehouseManagement, 3000, 5);
+    Product product(manager, worker, "TestProduct", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics);
+    auto customer = std::make_shared<Customer>("Alice", "Johnson", 35);
+
+    auto transaction1 = std::make_unique<Transaction>(product, 2, 200.0, worker, customer);
+    auto transaction2 = std::make_unique<Transaction>(product, 3, 300.0, worker, customer);
+    transaction2->cancel();
+
+    registr.addTransaction(std::move(transaction1));
+    registr.addTransaction(std::move(transaction2));
+    registr.removeCanceledTransactions();
+
+    EXPECT_EQ(registr.getTransactions().size(), 1);
+    EXPECT_EQ(registr.getCanceledTransactions().size(), 1);
+}
+
