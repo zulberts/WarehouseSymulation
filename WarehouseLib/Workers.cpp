@@ -3,6 +3,8 @@
 #include <sstream>
 #include <algorithm>
 
+// DONE
+
 Worker::Worker(const std::string& name, const std::string& lastname, int age,
     Post post, double salary, int experience)
     : Person(name, lastname, age), post(post), salary(salary), experience(experience) {}
