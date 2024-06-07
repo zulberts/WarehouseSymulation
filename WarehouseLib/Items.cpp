@@ -2,6 +2,8 @@
 #include "Workers.h"
 #include <ctime>
 
+//DONE
+
 Item::Item(const std::string& name, double price, const ProductType type, double tax, std::time_t expiryDate)
     : name(name), price(price), type(type), tax(tax), expiryDate(expiryDate) {}
 
@@ -25,42 +27,8 @@ std::time_t Item::getExpiryDate() const {
     return expiryDate;
 }
 
-ShipmentDetail::ShipmentDetail(const Item& item, int quantity)
-    : item(item), quantity(quantity) {}
-
-Shipment::Shipment(const std::vector<ShipmentDetail>& items, const Manager& receivingManager, const Worker& storageWorker, const std::string& deliveryCompany)
-    : items(items), receivingManager(receivingManager), storageWorker(storageWorker), deliveryCompany(deliveryCompany) {
-    totalcost = 0.0;
-    for (const auto& detail : items) {
-        totalcost += (detail.item.getPrice() + detail.item.getTax()) * detail.quantity;
-    }
-}
-
-const std::vector<ShipmentDetail>& Shipment::getProducts() const {
-    return items;
-}
-
-Manager Shipment::getReceivingManager() const {
-    return receivingManager;
-}
-
-Worker Shipment::getStorageWorker() const {
-    return storageWorker;
-}
-
-std::string Shipment::getDeliveryCompany() const {
-    return deliveryCompany;
-}
-
-double Shipment::getTotalCost() const {
-    return totalcost;
-}
-
-void Shipment::addProducts(const std::vector<ShipmentDetail>& newItems) {
-    std::vector<ShipmentDetail> updatedItems = items;
-    updatedItems.insert(updatedItems.end(), newItems.begin(), newItems.end());
-    *this = Shipment(updatedItems, receivingManager, storageWorker, deliveryCompany);
-}
+ShipmentDetail::ShipmentDetail(const Item& item, int quantity, std::time_t deliveryDate)
+    : item(item), quantity(quantity), deliveryDate(deliveryDate) {}
 
 Product::Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const std::string& country, std::time_t validity, int weight, ProductType type)
     : receivingManager(recManager), storageWorker(storWorker), name(name), price(price), tax(tax), country(country), validity_term(validity), weight(weight), type(type), is_sold(false) {

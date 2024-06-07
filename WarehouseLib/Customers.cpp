@@ -2,6 +2,8 @@
 #include <sstream>
 #include <stdexcept>
 
+// DONE
+
 Customer::Customer(const std::string& name, const std::string& lastname, int age)
     : Person(name, lastname, age) {}
 
