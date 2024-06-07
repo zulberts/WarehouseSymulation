@@ -1,5 +1,7 @@
 #include "Person.h"
 
+// DONE
+
 Person::Person(const std::string& name, const std::string& lastname, int age)
     : name(name), lastname(lastname), age(age) {}
 

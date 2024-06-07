@@ -4,8 +4,8 @@
 #include <algorithm>
 
 Worker::Worker(const std::string& name, const std::string& lastname, int age,
-    Post post, double salary, int seniority)
-    : Person(name, lastname, age), post(post), salary(salary), seniority(seniority) {}
+    Post post, double salary, int experience)
+    : Person(name, lastname, age), post(post), salary(salary), experience(experience) {}
 
 Post Worker::getPost() const {
     return post;
@@ -15,8 +15,8 @@ double Worker::getSalary() const {
     return salary;
 }
 
-int Worker::getSeniority() const {
-    return seniority;
+int Worker::getExperience() const {
+    return experience;
 }
 
 std::string Worker::operator[](int index) const {

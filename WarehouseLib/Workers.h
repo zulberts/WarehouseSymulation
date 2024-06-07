@@ -3,6 +3,8 @@
 #include <vector>
 #include "Person.h"
 
+//DONE
+
 enum class Post {
     PhysicalLabor,
     WarehouseManagement,
@@ -13,16 +15,16 @@ class Worker : public Person {
 protected:
     Post post;
     double salary;
-    int seniority;
+    int experience;
     std::vector<std::string> opinions;
 
 public:
     Worker(const std::string& name, const std::string& lastname, int age,
-        Post post, double salary, int seniority);
+        Post post, double salary, int experience);
 
     Post getPost() const;
     double getSalary() const;
-    int getSeniority() const;
+    int getExperience() const;
     std::string operator[](int index) const;
     void addOpinion(const std::string& opinion);
     std::string getOpinions() const;
@@ -34,7 +36,7 @@ protected:
 
 public:
     Manager(const std::string& name, const std::string& lastname, int age,
-        double salary, int seniority);
+        double salary, int expercience);
 
     void employWorker(Worker* worker);
     void dismissWorker(Worker* worker);

@@ -4,6 +4,8 @@
 #include "Items.h"
 #include "Person.h"
 
+//DONE
+
 class Customer : public Person {
 protected:
     std::vector<Product> purchaseHistory;
