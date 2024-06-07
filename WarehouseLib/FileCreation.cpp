@@ -5,6 +5,8 @@
 #include <ctime>
 #include <stdexcept>
 
+//DONE
+
 std::string Document::GetCurrentDateTime() {
     std::time_t t = std::time(nullptr);
     std::tm tm;
@@ -18,7 +20,7 @@ std::string Document::GetCurrentDateTime() {
     return date;
 }
 
-Invoice::Invoice(const std::string& invoiceNumber, const Person& seller, const Customer& customer)
+Invoice::Invoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer)
     : invoiceNumber(invoiceNumber), seller(seller), customer(customer) {}
 
 void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) {
@@ -30,7 +32,7 @@ void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, cons
         file << "------------------------------------" << std::endl;
         file << "Seller: " << seller.getName() << " " << seller.getLastName() << std::endl;
         file << "------------------------------------" << std::endl;
-        file << "Buyer: " << customer.getName() << " " << customer.getLastName() << std::endl;
+        file << "Buyer: " << customer->getName() << " " << customer->getLastName() << std::endl;
         file << "------------------------------------" << std::endl;
         file << std::left << std::setw(20) << "Product" << std::setw(10) << "Unit Price" << std::setw(10) << "Quantity" << std::setw(10) << "Tax Rate" << std::setw(10) << "Total" << std::endl;
         file << "------------------------------------" << std::endl;
@@ -56,6 +58,9 @@ void Invoice::GenerateDocument(const std::vector<ShipmentDetail>& products, cons
         std::terminate();
     }
 }
+
+Receipt::Receipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer)
+    : paymentMethod(paymentMethod), customer(customer) {}
 
 void Receipt::GenerateDocument(const std::vector<ShipmentDetail>& products, const std::string& path) {
     std::ofstream file(path);

@@ -3,20 +3,25 @@
 #include <memory>
 #include <string>
 #include <algorithm>
-#include "Items.h" 
+#include "Items.h"
 #include "Transactions.h"
 #include "Workers.h"
+#include "Shipment.h"
+#include "FileCreation.h"
+
+//DONE
 
 class Warehouse {
 private:
     std::vector<std::unique_ptr<Product>> products;
-    std::vector<Transaction> transactions;
+    TransactionRegister transactionRegister;
+    std::vector<std::unique_ptr<Shipment>> shipments;
+    std::vector<std::unique_ptr<Worker>> workers;
     Manager* manager;
 
 public:
-
-    Warehouse() : manager(nullptr), transactions() {}
-    Warehouse(Manager* manager) : manager(manager), transactions() {}
+    Warehouse() : manager(nullptr) {}
+    Warehouse(Manager* manager) : manager(manager) {}
 
     void addProduct(std::unique_ptr<Product> product);
     const std::vector<std::unique_ptr<Product>>& getProducts() const;
@@ -26,6 +31,17 @@ public:
     std::vector<Product*> searchByExpiryDate(std::time_t expiryDate) const;
     std::vector<Product*> searchByType(ProductType type) const;
 
-    void addTransaction(const Transaction& transaction);
-    const std::vector<Transaction>& getTransactions() const;
+    void addTransaction(std::unique_ptr<Transaction> transaction);
+    const std::vector<std::unique_ptr<Transaction>>& getTransactions() const;
+
+    void addWorker(std::unique_ptr<Worker> worker);
+    const std::vector<std::unique_ptr<Worker>>& getWorkers() const;
+
+    void addShipment(std::unique_ptr<Shipment> shipment);
+    const std::vector<std::unique_ptr<Shipment>>& getShipments() const;
+
+    void applyDiscounts(double discountRate, std::time_t daysBeforeExpiry);
+
+    void generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path);
+    void generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path);
 };

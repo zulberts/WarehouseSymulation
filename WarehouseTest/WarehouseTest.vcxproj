@@ -100,6 +100,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="test_Customers.cpp" />
+    <ClCompile Include="test_Shipment.cpp" />
     <ClCompile Include="test_Warehouse.cpp" />
     <ClCompile Include="test_DataTransfer.cpp" />
     <ClCompile Include="test_FileCreation.cpp" />

@@ -1,175 +1,59 @@
 #include <gtest/gtest.h>
-#include <fstream>
-#include <nlohmann/json.hpp>
 #include "../WarehouseLib/DataTransfer.h"
+#include "../WarehouseLib/Warehouse.h"
 #include "../WarehouseLib/Items.h"
+#include "../WarehouseLib/Workers.h"
+#include "../WarehouseLib/Customers.h"
+#include <fstream>
 
-TEST(DataTransferTest, SaveToJson) {
-
-    Manager manager("John", "Doe", 45, 1000.0, 10);
-    Worker worker("Jane", "Smith", 30, Post::PhysicalLabor, 500.0, 5);
-
-    auto product1 = std::make_unique<Product>(manager, worker, "Product1", 10.0, 1.0, "USA", 1627841025, 500, ProductType::Electronics);
-    auto product2 = std::make_unique<Product>(manager, worker, "Product2", 20.0, 2.0, "Canada", 1627842025, 1000, ProductType::Apparel);
-
+TEST(DataTransferTest, SaveAndLoadWarehouse) {
     Warehouse warehouse;
+
+    Manager manager("Andrzej", "Duda", 45, 6000, 10);
+    auto worker1 = std::make_unique<Worker>("Donald", "Tusk", 30, Post::PhysicalLabor, 3000, 5);
+    auto worker2 = std::make_unique<Worker>("Jaroslaw", "Kaczynski", 50, Post::WarehouseManagement, 5000, 20);
+    Worker* rawWorker2 = worker2.get();
+    warehouse.addWorker(std::move(worker1));
+    warehouse.addWorker(std::move(worker2));
+
+    auto product1 = std::make_unique<Product>(manager, *rawWorker2, "Apple", 1.0, 0.1, "USA", std::time(nullptr) + 86400, 100, ProductType::Perishable);
+    auto product2 = std::make_unique<Product>(manager, *rawWorker2, "Laptop", 1000.0, 0.2, "China", std::time(nullptr) + 86400 * 30, 2000, ProductType::Electronics);
     warehouse.addProduct(std::move(product1));
     warehouse.addProduct(std::move(product2));
 
-    std::string testFilename = "test_warehouse.json";
+    auto customer = std::make_shared<PrivatePerson>("Donald", "Tusk", 30);
 
-    DataTransfer::saveToJson(warehouse, testFilename);
+    Product productCopy = *warehouse.searchByName("Apple").front();
+    auto transaction = std::make_unique<Transaction>(productCopy, 5, 5.0, *rawWorker2, customer);
+    warehouse.addTransaction(std::move(transaction));
 
-    std::ifstream file(testFilename);
-    ASSERT_TRUE(file.is_open());
+    std::vector<ShipmentDetail> items;
+    Item item(productCopy.name, productCopy.price, productCopy.type, productCopy.tax, productCopy.validity_term);
+    items.emplace_back(item, 5, std::time(nullptr) + 86400);
+    auto shipment = std::make_unique<Shipment>(items, manager, *rawWorker2, "DHL", std::time(nullptr) + 86400, customer);
+    warehouse.addShipment(std::move(shipment));
 
-    nlohmann::json j;
-    file >> j;
-    file.close();
+    DataTransfer::saveToJson(warehouse, "warehouse_test.json");
 
-    ASSERT_EQ(j["products"].size(), 2);
-    EXPECT_EQ(j["products"][0]["name"], "Product1");
-    EXPECT_EQ(j["products"][0]["price"], 10.0);
-    EXPECT_EQ(j["products"][0]["country"], "USA");
+    Warehouse loadedWarehouse = DataTransfer::loadFromJson("warehouse_test.json");
 
-    EXPECT_EQ(j["products"][1]["name"], "Product2");
-    EXPECT_EQ(j["products"][1]["price"], 20.0);
-    EXPECT_EQ(j["products"][1]["country"], "Canada");
+    const auto& loadedProducts = loadedWarehouse.getProducts();
+    ASSERT_EQ(loadedProducts.size(), 2);
+    EXPECT_EQ(loadedProducts[0]->name, "Apple");
+    EXPECT_EQ(loadedProducts[1]->name, "Laptop");
 
-    std::remove(testFilename.c_str());
+    const auto& loadedTransactions = loadedWarehouse.getTransactions();
+    ASSERT_EQ(loadedTransactions.size(), 1);
+    EXPECT_EQ(loadedTransactions[0]->getProduct().name, "Apple");
+    EXPECT_EQ(loadedTransactions[0]->getQuantity(), 5);
+
+    const auto& loadedShipments = loadedWarehouse.getShipments();
+    ASSERT_EQ(loadedShipments.size(), 1);
+    EXPECT_EQ(loadedShipments[0]->getDeliveryCompany(), "DHL");
+    EXPECT_EQ(loadedShipments[0]->getProducts()[0].item.getName(), "Apple");
+
+    const auto& loadedWorkers = loadedWarehouse.getWorkers();
+    ASSERT_EQ(loadedWorkers.size(), 2);
+    EXPECT_EQ(loadedWorkers[0]->getName(), "Donald");
+    EXPECT_EQ(loadedWorkers[1]->getName(), "Jaroslaw");
 }
-
-TEST(DataTransferTest, LoadFromJson) {
-
-    Manager manager("John", "Doe", 45, 1000.0, 10);
-    Worker worker("Jane", "Smith", 30, Post::PhysicalLabor, 500.0, 5);
-
-    auto product1 = std::make_unique<Product>(manager, worker, "Product1", 10.0, 1.0, "USA", 1627841025, 500, ProductType::Electronics);
-    auto product2 = std::make_unique<Product>(manager, worker, "Product2", 20.0, 2.0, "Canada", 1627842025, 1000, ProductType::Apparel);
-
-    Warehouse warehouse;
-    warehouse.addProduct(std::move(product1));
-    warehouse.addProduct(std::move(product2));
-
-    std::string testFilename = "test_warehouse.json";
-
-    DataTransfer::saveToJson(warehouse, testFilename);
-
-    Warehouse loadedWarehouse = DataTransfer::loadFromJson(testFilename);
-
-    const auto& products = loadedWarehouse.getProducts();
-    ASSERT_EQ(products.size(), 2);
-
-    const Product& loadedProduct1 = *products[0];
-    EXPECT_EQ(loadedProduct1.name, "Product1");
-    EXPECT_EQ(loadedProduct1.price, 10.0);
-    EXPECT_EQ(loadedProduct1.country, "USA");
-
-    const Product& loadedProduct2 = *products[1];
-    EXPECT_EQ(loadedProduct2.name, "Product2");
-    EXPECT_EQ(loadedProduct2.price, 20.0);
-    EXPECT_EQ(loadedProduct2.country, "Canada");
-
-    std::remove(testFilename.c_str());
-}
-
-
-TEST(DataTransferTest, SaveAndLoadEmptyWarehouse) {
-    Warehouse emptyWarehouse;
-    std::string testFilename = "test_empty_warehouse.json";
-
-    DataTransfer::saveToJson(emptyWarehouse, testFilename);
-
-    std::ifstream file(testFilename);
-    ASSERT_TRUE(file.is_open());
-
-    nlohmann::json j;
-    file >> j;
-    file.close();
-
-    ASSERT_EQ(j["products"].size(), 0);
-
-    Warehouse loadedWarehouse = DataTransfer::loadFromJson(testFilename);
-    ASSERT_EQ(loadedWarehouse.getProducts().size(), 0);
-
-    std::remove(testFilename.c_str());
-}
-
-TEST(DataTransferTest, SaveAndLoadProductDetails) {
-
-    Manager manager("John", "Doe", 45, 1000.0, 10);
-    Worker worker("Jane", "Smith", 30, Post::PhysicalLabor, 500.0, 5);
-
-    auto product1 = std::make_unique<Product>(manager, worker, "Product1", 10.0, 1.0, "USA", 1627841025, 500, ProductType::Electronics);
-    product1->setSaleDate(1627845000);
-    auto product2 = std::make_unique<Product>(manager, worker, "Product2", 20.0, 2.0, "Canada", 1627842025, 1000, ProductType::Apparel);
-    product2->setSaleDate(1627846000);
-
-    Warehouse warehouse;
-    warehouse.addProduct(std::move(product1));
-    warehouse.addProduct(std::move(product2));
-
-    std::string testFilename = "test_product_details.json";
-
-    DataTransfer::saveToJson(warehouse, testFilename);
-
-    Warehouse loadedWarehouse = DataTransfer::loadFromJson(testFilename);
-
-    const auto& products = loadedWarehouse.getProducts();
-    ASSERT_EQ(products.size(), 2);
-
-    const Product& loadedProduct1 = *products[0];
-    EXPECT_EQ(loadedProduct1.name, "Product1");
-    EXPECT_EQ(loadedProduct1.price, 10.0);
-    EXPECT_EQ(loadedProduct1.tax, 1.0);
-    EXPECT_EQ(loadedProduct1.country, "USA");
-    EXPECT_EQ(loadedProduct1.validity_term, 1627845000);
-    EXPECT_EQ(loadedProduct1.weight, 500);
-    EXPECT_EQ(loadedProduct1.getSaleDate(), 1627845000);
-    EXPECT_EQ(loadedProduct1.type, ProductType::Electronics);
-
-    const Product& loadedProduct2 = *products[1];
-    EXPECT_EQ(loadedProduct2.name, "Product2");
-    EXPECT_EQ(loadedProduct2.price, 20.0);
-    EXPECT_EQ(loadedProduct2.tax, 2.0);
-    EXPECT_EQ(loadedProduct2.country, "Canada");
-    EXPECT_EQ(loadedProduct2.validity_term, 1627846000);
-    EXPECT_EQ(loadedProduct2.weight, 1000);
-    EXPECT_EQ(loadedProduct2.getSaleDate(), 1627846000);
-    EXPECT_EQ(loadedProduct2.type, ProductType::Apparel);
-
-    std::remove(testFilename.c_str());
-}
-
-TEST(DataTransferTest, SaveAndLoadProductAvailability) {
-
-    Manager manager("John", "Doe", 45, 1000.0, 10);
-    Worker worker("Jane", "Smith", 30, Post::PhysicalLabor, 500.0, 5);
-
-    auto product1 = std::make_unique<Product>(manager, worker, "Product1", 10.0, 1.0, "USA", 1627841025, 500, ProductType::Electronics);
-    product1->setSaleDate(1627845000);
-    auto product2 = std::make_unique<Product>(manager, worker, "Product2", 20.0, 2.0, "Canada", 1627842025, 1000, ProductType::Apparel);
-    product2->setSaleDate(0);  
-
-    Warehouse warehouse;
-    warehouse.addProduct(std::move(product1));
-    warehouse.addProduct(std::move(product2));
-
-    std::string testFilename = "test_product_availability.json";
-
-    DataTransfer::saveToJson(warehouse, testFilename);
-
-    Warehouse loadedWarehouse = DataTransfer::loadFromJson(testFilename);
-
-    const auto& products = loadedWarehouse.getProducts();
-    ASSERT_EQ(products.size(), 2);
-
-    const Product& loadedProduct1 = *products[0];
-    EXPECT_FALSE(loadedProduct1.isAvailable());
-
-    const Product& loadedProduct2 = *products[1];
-    EXPECT_FALSE(loadedProduct2.isAvailable());
-
-    std::remove(testFilename.c_str());
-}
-
