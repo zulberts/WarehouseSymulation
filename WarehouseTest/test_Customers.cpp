@@ -71,7 +71,7 @@ TEST(FirmTest, CalculateDiscount) {
             Worker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5),
             "Product" + std::to_string(i), 5000.0, 0.2, "Country", std::time(nullptr) + 86400, 1, ProductType::NonePerishable));
     }
-    EXPECT_EQ(firm.calculateDiscount(), 0.05);
+    EXPECT_EQ(firm.calculateDiscount(), 0.1);
 
     for (int i = 0; i < 20; ++i) {
         firm.addPurchase(Product(Manager("ManagerName", "ManagerLastName", 40, 8000, 10),

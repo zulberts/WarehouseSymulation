@@ -3,13 +3,12 @@
 #include <memory>
 #include <string>
 #include <algorithm>
+#include <fstream>
 #include "Items.h"
 #include "Transactions.h"
 #include "Workers.h"
 #include "Shipment.h"
 #include "FileCreation.h"
-
-//DONE
 
 class Warehouse {
 private:
@@ -44,4 +43,7 @@ public:
 
     void generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path);
     void generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path);
+
+    void saveToJson(const std::string& filename) const; 
+    void loadFromJson(const std::string& filename); 
 };

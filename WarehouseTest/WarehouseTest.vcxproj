@@ -103,7 +103,6 @@
     <ClCompile Include="test_Customers.cpp" />
     <ClCompile Include="test_Shipment.cpp" />
     <ClCompile Include="test_Warehouse.cpp" />
-    <ClCompile Include="test_DataTransfer.cpp" />
     <ClCompile Include="test_FileCreation.cpp" />
     <ClCompile Include="test_Items.cpp" />
     <ClCompile Include="test_Person.cpp" />

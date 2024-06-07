@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+#include <filesystem>
+#include <fstream>
 #include "../WarehouseLib/Warehouse.h"
 #include "../WarehouseLib/Items.h"
 #include "../WarehouseLib/Workers.h"
@@ -67,4 +69,57 @@ TEST(WarehouseTest, ApplyDiscounts) {
     auto products = warehouse.searchByName("Banana");
     ASSERT_EQ(products.size(), 1);
     EXPECT_DOUBLE_EQ(products[0]->price, 1.0);
+}
+
+
+TEST(WarehouseTest, SaveToJsonTest) {
+    Warehouse warehouse;
+
+    Manager receivingManager("Manager", "Receiving", 40, 5000.0, 10);
+    Worker storageWorker("Worker", "Storage", 30, Post::PhysicalLabor, 3000.0, 5);
+    warehouse.addProduct(std::make_unique<Product>(receivingManager, storageWorker, "TestProduct", 10.0, 0.05, "TestCountry", std::time(nullptr) + 86400, 100, ProductType::Electronics));
+    warehouse.addWorker(std::make_unique<Worker>("Test", "Worker", 30, Post::WarehouseManagement, 5000.0, 5));
+
+    const std::string testFilename = "test_data.json";
+
+    ASSERT_NO_THROW(warehouse.saveToJson(testFilename));
+
+    ASSERT_TRUE(std::ifstream(testFilename).good());
+
+    std::ifstream file(testFilename, std::ios::binary | std::ios::ate);
+    ASSERT_GT(file.tellg(), 0);
+    file.close();
+
+}
+
+TEST(WarehouseTest, LoadFromJsonTest) {
+    Warehouse warehouse;
+
+    const std::string testFilename = "test_data.json";
+
+    Manager receivingManager("Manager", "Receiving", 40, 5000.0, 10);
+    Worker storageWorker("Worker", "Storage", 30, Post::PhysicalLabor, 3000.0, 5);
+    warehouse.addProduct(std::make_unique<Product>(receivingManager, storageWorker, "TestProduct", 10.0, 0.05, "TestCountry", std::time(nullptr) + 86400, 100, ProductType::Electronics));
+    warehouse.addWorker(std::make_unique<Worker>("Test", "Worker", 30, Post::WarehouseManagement, 5000.0, 5));
+    ASSERT_NO_THROW(warehouse.saveToJson(testFilename));
+
+    Warehouse newWarehouse;
+
+    ASSERT_NO_THROW(newWarehouse.loadFromJson(testFilename));
+
+    const auto& products = newWarehouse.getProducts();
+    ASSERT_EQ(products.size(), 1); 
+    ASSERT_EQ(products[0]->name, "TestProduct");
+
+    const auto& workers = newWarehouse.getWorkers();
+    ASSERT_EQ(workers.size(), 1); 
+    ASSERT_EQ(workers[0]->getName(), "Test");
+    ASSERT_EQ(workers[0]->getLastName(), "Worker");
+    ASSERT_EQ(workers[0]->getPost(), Post::WarehouseManagement);
+    ASSERT_EQ(workers[0]->getSalary(), 5000.0);
+    ASSERT_EQ(workers[0]->getExperience(), 5);
+
+    if (std::ifstream(testFilename)) {
+        std::remove(testFilename.c_str());
+    }
 }
