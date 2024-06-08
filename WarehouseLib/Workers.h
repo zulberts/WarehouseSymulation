@@ -41,4 +41,8 @@ public:
     void employWorker(Worker* worker);
     void dismissWorker(Worker* worker);
     std::string generateReport() const;
+
+    Post getPost() const;
+    double getSalary() const;
+    int getExperience() const;
 };

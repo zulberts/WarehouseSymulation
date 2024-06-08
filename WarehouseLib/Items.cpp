@@ -2,10 +2,8 @@
 #include "Workers.h"
 #include <ctime>
 
-//DONE
-
-Item::Item(const std::string& name, double price, const ProductType type, double tax, std::time_t expiryDate)
-    : name(name), price(price), type(type), tax(tax), expiryDate(expiryDate) {}
+Item::Item(const std::string& name, double price, const ProductType type, double tax, std::time_t expiryDate, int weight, const Firm& firm)
+    : name(name), price(price), type(type), tax(tax), expiryDate(expiryDate), weight(weight), firm(firm) {}
 
 std::string Item::getName() const {
     return name;
@@ -27,24 +25,30 @@ std::time_t Item::getExpiryDate() const {
     return expiryDate;
 }
 
-ShipmentDetail::ShipmentDetail(const Item& item, int quantity, std::time_t deliveryDate)
-    : item(item), quantity(quantity), deliveryDate(deliveryDate) {}
-
-Product::Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const std::string& country, std::time_t validity, int weight, ProductType type)
-    : receivingManager(recManager), storageWorker(storWorker), name(name), price(price), tax(tax), country(country), validity_term(validity), weight(weight), type(type), is_sold(false) {
-    sale_date = std::time(nullptr);
+int Item::getWeight() const {
+    return weight;
 }
 
+Firm Item::getFirm() const {
+    return firm;
+}
+
+ShipmentDetail::ShipmentDetail(const Item& item, int quantity)
+    : item(item), quantity(quantity) {}
+
+Product::Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const Firm& firm, std::time_t expiryDate, int weight, ProductType type)
+    : Item(name, price, type, tax, expiryDate, weight, firm), receivingManager(recManager), storageWorker(storWorker), isSold(false), saleDate(0) {}
+
 std::time_t Product::getSaleDate() const {
-    return sale_date;
+    return saleDate;
 }
 
 void Product::setSaleDate(std::time_t newSaleDate) {
-    sale_date = newSaleDate;
-    validity_term = sale_date;
+    saleDate = newSaleDate;
+    markAsSold();
 }
 
 bool Product::isAvailable() const {
     std::time_t currentTime = std::time(nullptr);
-    return currentTime < validity_term && !is_sold;
+    return currentTime < getExpiryDate() && !isSold;
 }

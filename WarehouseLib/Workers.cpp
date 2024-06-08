@@ -45,6 +45,18 @@ Manager::Manager(const std::string& name, const std::string& lastname, int age,
     double salary, int seniority)
     : Worker(name, lastname, age, Post::Other, salary, seniority) {}
 
+Post Manager::getPost() const {
+    return post;
+}
+
+double Manager::getSalary() const {
+    return salary;
+}
+
+int Manager::getExperience() const {
+    return experience;
+}
+
 void Manager::employWorker(Worker* worker) {
     subordinates.push_back(worker);
 }

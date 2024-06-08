@@ -36,3 +36,36 @@ TEST(PersonTest, ConstructorMaximalData) {
     EXPECT_EQ(person.getLastName(), "LongLastNameLongLastNameLongLastName");
     EXPECT_EQ(person.getAge(), 120);
 }
+
+TEST(PersonTest, NegativeAge) {
+    Person person("John", "Doe", -1);
+    EXPECT_EQ(person.getAge(), -1);
+}
+
+TEST(PersonTest, EmptyName) {
+    Person person("", "Doe", 30);
+    EXPECT_EQ(person.getName(), "");
+    EXPECT_EQ(person.getLastName(), "Doe");
+    EXPECT_EQ(person.getAge(), 30);
+}
+
+TEST(PersonTest, EmptyLastName) {
+    Person person("John", "", 30);
+    EXPECT_EQ(person.getName(), "John");
+    EXPECT_EQ(person.getLastName(), "");
+    EXPECT_EQ(person.getAge(), 30);
+}
+
+TEST(PersonTest, VeryLargeAge) {
+    Person person("John", "Doe", 999999);
+    EXPECT_EQ(person.getAge(), 999999);
+}
+
+TEST(PersonTest, LongNameAndLastName) {
+    std::string longName(1000, 'A');
+    std::string longLastName(1000, 'B');
+    Person person(longName, longLastName, 30);
+    EXPECT_EQ(person.getName(), longName);
+    EXPECT_EQ(person.getLastName(), longLastName);
+    EXPECT_EQ(person.getAge(), 30);
+}
