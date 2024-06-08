@@ -12,14 +12,10 @@ Zawiera list wskazników pracowników, posiada metody zwolnienia i zatrudnienia 
 
 Pliki Customers:
 Klasa Customer - klasa pochodna klasy Person
-Zawiera liste list zakupionych produktów, ma funkcje która dodaje do listy zakupów oraz funkcje ktora pozwala zwrocic Preferencje zakupów, możliwość jest dodania zniżek dla danego customera (zniżka powina zwracać double z przedziału 0.00-1.00)
 
 Klasa PrivatePerson - klasa pochodna klasy Customer
-Zawiera liste zakupów,( tutaj Item jest a nie produkt to tez trzeba zmienic, właściwie to usunac bo w customerze to jest, wiec niepotrzebne to jest),  
-zmienić metode getPreference zeby product zwracało a nie item
 
 Klasa Firm - klasa pochodna klasy Customer
-Zawiera nazwe firmy, id, (exchenge - trzeba to usunąć nie potrzebne to jest) (należy dodać kraj firmy, potrzebne do produktów a od firm je się kupuje)
 
 ## Klasy Dostarczania produktów do magazunu
 Pliki Items: 
@@ -29,7 +25,7 @@ Rozróżniać będziemy Item i Product ponieważ do productu chcemy dodać obsł
 Struct ShipmentDetail: zawiera Item, oraz ile tych itemów przyjechało oraz kiedy przyjechały.
 
 Klasa Product: (chyba trzeba zrobić aby dziedziczyła po Itemie - raczej napewno XD)
-zawiera odbierającego Managera ktory sprawdza towar, oraz Workera który rozpakował towar i boola ktory informuje czy produkt zostal sprzedany (sprawdza ile zostało na magazynie jezeli wiecej niz zero to dostepnyu, usuwamy sell_date), reszte rzeczy dziedziczy po klasie Item
+zawiera odbierającego Managera ktory sprawdza towar, oraz Workera który rozpakował towar i boola ktory informuje czy produkt zostal sprzedany (sprawdza ile zostało na magazynie jezeli wiecej niz zero to dostepnyu), reszte rzeczy dziedziczy po klasie Item
 zawiera metody takie jak ustalenie daty sprzedazy, oraz czy jest dostepny(ta metoda jest nie potrzebna ponieważ to wtedy będzie działało tylko na jeden produkt a w warehouse moze byc takich produktow pełno, więc do warehouse trzeba bedzie dodac taką opcje)
 
 Pliki Shipment:
