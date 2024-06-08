@@ -41,9 +41,13 @@ public:
 
     void applyDiscounts(double discountRate, std::time_t daysBeforeExpiry);
 
-    void generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path);
-    void generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path);
+    void generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions);
+    void generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions);
+
 
     void saveToJson(const std::string& filename) const; 
     void loadFromJson(const std::string& filename); 
+
+    void listWorkers() const;
+    bool fireWorker(size_t index);
 };

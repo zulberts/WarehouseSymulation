@@ -1,35 +1,37 @@
 #include "../WarehouseLib/Warehouse.h"
-#include "../WarehouseLib/Workers.h"
-#include "../WarehouseLib/Customers.h"
-#include "../WarehouseLib/Items.h"
-#include "../WarehouseLib/Transactions.h"
-#include "../WarehouseLib/Shipment.h"
 #include <iostream>
 #include <memory>
-#include <ctime>
 
-// TODO: CORRECT ERRORS
+
+std::unique_ptr<Shipment> createShipment(const Manager& manager, const Worker& worker, const std::string& company, double price, int quantity) {
+    std::vector<ShipmentDetail> items;
+    std::time_t expiryDate = std::time(nullptr) + 3600 * 24 * 365;
+
+    Item item("Laptop", price, ProductType::Electronics, 0.2, expiryDate);
+    items.emplace_back(item, quantity, expiryDate);
+
+    auto customer = std::make_shared<Firm>("Company Representative", "Smith", 40, company, "12345", "NYSE");
+
+    return std::make_unique<Shipment>(items, manager, worker, company, std::time(nullptr), customer);
+}
+
 void createNewWarehouse(Warehouse& warehouse) {
-    //  todo: addapt to different option of creation warehouse
     std::cout << "Creating a new warehouse..." << std::endl;
 
     Manager manager("John", "Doe", 35, 5000, 20);
-    Firm firm("Ewa", "Czarny", 29, "TechCorp", "12345", "NASDAQ");
     Worker worker("Jane", "Smith", 30, Post::WarehouseManagement, 3000, 5);
-    Product product1(manager, worker, "TestProduct1", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics);
-    Product product2(manager, worker, "TestProduct2", 100.0, 0.2, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Apparel);
-    auto customer = std::make_shared<Customer>("Alice", "Johnson", 35);
 
-    warehouse.addProduct(std::make_unique<Product>("Product1", 10.0, 0.1, "USA", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Electronics));
-    warehouse.addProduct(std::make_unique<Product>("Product2", 20.0, 0.15, "China", std::time(nullptr) + 3600 * 24 * 365, 1, ProductType::Apparel));
-    warehouse.addWorker(std::make_unique<Worker>(worker));
-    warehouse.addWorker(std::make_unique<Manager>(manager));
+    auto shipment1 = createShipment(manager, worker, "TechCorp", 1000.0, 100);
+    auto shipment2 = createShipment(manager, worker, "InnoElectronics", 950.0, 200);
+    auto shipment3 = createShipment(manager, worker, "GlobalTech", 1100.0, 300);
 
-    warehouse.addTransaction(std::make_unique<Transaction>(product1, 2, 20.0, worker, &customer));
-    warehouse.addTransaction(std::make_unique<Transaction>(product2, 1, 20.0, manager, &firm));
+    warehouse.addShipment(std::move(shipment1));
+    warehouse.addShipment(std::move(shipment2));
+    warehouse.addShipment(std::move(shipment3));
 
-    std::cout << "New warehouse created." << std::endl;
+    std::cout << "New warehouse created with shipments." << std::endl;
 }
+
 
 int main() {
     Warehouse warehouse;
@@ -56,178 +58,189 @@ int main() {
         createNewWarehouse(warehouse);
     }
 
-    std::cout << "Choose your role:" << std::endl;
-    std::cout << "1. Warehouse Manager" << std::endl;
-    std::cout << "2. Customer" << std::endl;
-    int roleOption;
-    std::cin >> roleOption;
 
-    if (roleOption == 1) {
+    while (true) {
+        std::cout << "Choose your role:" << std::endl;
+        std::cout << "1. Warehouse Manager" << std::endl;
+        std::cout << "2. Customer" << std::endl;
+        std::cout << "3. Exit" << std::endl;
+        int roleOption;
+        std::cin >> roleOption;
 
-        std::cout << "Welcome, Warehouse Manager!" << std::endl;
-        std::cout << "1. Add Product" << std::endl;
-        std::cout << "2. Add Worker" << std::endl;
-        std::cout << "3. Generate Invoice" << std::endl;
-        std::cout << "4. Generate Receipt" << std::endl;
-        std::cout << "5. Apply Discounts" << std::endl;
-
-        int managerOption;
-        std::cin >> managerOption;
-
-        switch (managerOption) {
-        case 1: {
-            //todo
-            std::string name;
-            double price;
-            // todo.
-            
-            std::cout << "Enter product name: ";
-            std::cin >> name;
-            std::cout << "Enter product price: ";
-            std::cin >> price;
-            //todo
-            // todo
-            Product product(/*todo*/);
-            warehouse.addProduct(std::make_unique<Product>(product));
-            std::cout << "Product added successfully." << std::endl;
+        if (roleOption == 3) {
+            std::cout << "Exiting program." << std::endl;
             break;
         }
-        case 2: {
-            // todo
-            std::string name;
-            //todo
-            std::cout << "Enter worker name: ";
-            std::cin >> name;
-            // todo
-            Worker worker(/*todo*/);
-            warehouse.addWorker(std::make_unique<Worker>(worker));
-            std::cout << "Worker added successfully." << std::endl;
-            break;
+
+        if (roleOption == 1) {
+            while (true) {
+                std::cout << "Welcome, Warehouse Manager!" << std::endl;
+                std::cout << "1. Fire worker" << std::endl;
+                std::cout << "2. Add Worker" << std::endl;
+                std::cout << "3. Generate Invoice" << std::endl;
+                std::cout << "4. Generate Receipt" << std::endl;
+                std::cout << "5. Apply Discounts" << std::endl;
+                std::cout << "6. Exit to Main Menu" << std::endl;
+
+                //TODO trzeba dodaæ opcje dodawania wykresów i napisaæ takie funkcje
+
+                int managerOption;
+                std::cin >> managerOption;
+
+                if (managerOption == 6) {
+                    break;
+                }
+
+                switch (managerOption) {
+                case 1: {
+                    warehouse.listWorkers();
+                    std::cout << "Enter the number of the worker to fire: ";
+                    size_t workerIndex;
+                    std::cin >> workerIndex;
+                    if (warehouse.fireWorker(workerIndex)) {
+                        std::cout << "Worker fired successfully." << std::endl;
+                    }
+                    else {
+                        std::cout << "Failed to fire worker." << std::endl;
+                    }
+                    break;
+                }
+                case 2: {
+                    std::string name, lastName;
+                    int age, experience;
+                    double salary;
+                    int post;
+
+                    std::cout << "Enter worker name: ";
+                    std::cin >> name;
+                    std::cout << "Enter worker last name: ";
+                    std::cin >> lastName;
+                    std::cout << "Enter worker age: ";
+                    std::cin >> age;
+                    std::cout << "Enter worker post (0 - Physical Labor, 1 - Warehouse Management): ";
+                    std::cin >> post;
+                    std::cout << "Enter worker salary: ";
+                    std::cin >> salary;
+                    std::cout << "Enter worker experience: ";
+                    std::cin >> experience;
+
+                    Worker worker(name, lastName, age, static_cast<Post>(post), salary, experience);
+                    warehouse.addWorker(std::make_unique<Worker>(worker));
+                    std::cout << "Worker added successfully." << std::endl;
+                    break;
+                }
+                case 3: {
+                    std::string invoiceNumber;
+                    std::cout << "Enter invoice number: ";
+                    std::cin >> invoiceNumber;
+
+                    Person seller("SellerName", "SellerLastName", 0);
+                    std::shared_ptr<Customer> customer = std::make_shared<Firm>("FirmName", "FirmLastName", 0, "Firm", "12345", "NASDAQ");
+                    std::string path = "invoice.pdf";
+
+                    auto transactions = warehouse.getTransactions();
+                    warehouse.generateInvoice(invoiceNumber, seller, customer, path, transactions);
+                    std::cout << "Invoice generated successfully." << std::endl;
+                    break;
+                }
+
+                case 4: {
+                    std::string paymentMethod;
+                    std::cout << "Enter payment method: ";
+                    std::cin >> paymentMethod;
+
+                    std::shared_ptr<Customer> customer = std::make_shared<PrivatePerson>("CustomerName", "CustomerLastName", 0);
+                    std::string path = "receipt.pdf";
+
+                    auto transactions = warehouse.getTransactions();
+                    warehouse.generateReceipt(paymentMethod, customer, path, transactions);
+                    std::cout << "Receipt generated successfully." << std::endl;
+                    break;
+                }
+                case 5: {
+                    double discountRate;
+                    int daysBeforeExpiry;
+
+                    std::cout << "Enter discount rate: ";
+                    std::cin >> discountRate;
+                    std::cout << "Enter number of days before expiry: ";
+                    std::cin >> daysBeforeExpiry;
+
+                    warehouse.applyDiscounts(discountRate, daysBeforeExpiry);
+                    std::cout << "Discounts applied successfully." << std::endl;
+                    break;
+                }
+                default: {
+                    std::cout << "Invalid option for Warehouse Manager." << std::endl;
+                    break;
+                }
+                }
+            }
         }
-        case 3: {
+        else if (roleOption == 2) {
+            while (true) {
+                std::cout << "Welcome, Customer!" << std::endl;
+                std::cout << "1. Search Product by Name" << std::endl;
+                std::cout << "2. Search Product by Manufacturer" << std::endl;
+                std::cout << "3. Search Product by Expiry Date" << std::endl;
+                std::cout << "4. Search Product by Type" << std::endl;
+                std::cout << "5. View Purchase History" << std::endl;
+                std::cout << "6. Exit to Main Menu" << std::endl;
 
-            std::string invoiceNumber;
+                int customerOption;
+                std::cin >> customerOption;
 
-            std::cout << "Enter invoice number: ";
-            std::cin >> invoiceNumber;
+                if (customerOption == 6) {
+                    break;
+                }
 
-            std::vector<ShipmentDetail> products; 
-            Person seller(/*todo*/);
-            std::shared_ptr<Customer> customer = nullptr;  //TODO
-            std::string path; // todo
-
-            //TODO
-            /*Invoice invoice(invoiceNumber, seller, customer);
-            invoice.GenerateDocument(products, path);*/
-            std::cout << "Invoice generated successfully." << std::endl;
-            break;
+                switch (customerOption) {
+                case 1: {
+                    std::string productName;
+                    std::cout << "Enter the name of the product: ";
+                    std::cin >> productName;
+                    auto products = warehouse.searchByName(productName);
+                    break;
+                }
+                case 2: {
+                    std::string manufacturerName;
+                    std::cout << "Enter the manufacturer name: ";
+                    std::cin >> manufacturerName;
+                    auto products = warehouse.searchByManufacturer(manufacturerName);
+                    break;
+                }
+                case 3: {
+                    std::time_t expiryDate;
+                    std::cout << "Enter the expiry date (as timestamp): ";
+                    std::cin >> expiryDate;
+                    auto products = warehouse.searchByExpiryDate(expiryDate);
+                    break;
+                }
+                case 4: {
+                    int productType;
+                    std::cout << "Enter the product type (1 - Perishable, 2 - NonPerishable, 3 - Electronics, 4 - Apparel): ";
+                    std::cin >> productType;
+                    ProductType type = static_cast<ProductType>(productType - 1);
+                    auto products = warehouse.searchByType(type);
+                    break;
+                }
+                case 5: {
+                    auto transactions = warehouse.getTransactions();
+                    break;
+                }
+                default: {
+                    std::cout << "Invalid option for Customer." << std::endl;
+                    break;
+                }
+                }
+            }
         }
-        case 4: {
-
-            std::string paymentMethod;
-
-            std::cout << "Enter payment method: ";
-            std::cin >> paymentMethod;
-
-            std::vector<ShipmentDetail> products; 
-            std::string path; //todo
-
-            std::shared_ptr<Customer> customer = nullptr; // todo: get client
-            Receipt receipt(paymentMethod, customer);
-            receipt.GenerateDocument(products, path);
-            std::cout << "Receipt generated successfully." << std::endl;
-            break;
+        else {
+            std::cout << "Invalid role option. Please choose again." << std::endl;
         }
-        case 5: {
-            //todo
-            double discountRate;
-            std::time_t daysBeforeExpiry;
-
-            std::cout << "Enter discount rate: ";
-            std::cin >> discountRate;
-            std::cout << "Enter number of days before expiry: ";
-            std::cin >> daysBeforeExpiry;
-
-            warehouse.applyDiscounts(discountRate, daysBeforeExpiry);
-            std::cout << "Discounts applied successfully." << std::endl;
-            break;
-        }
-        default: {
-            std::cout << "Invalid option for Warehouse Manager. Exiting program." << std::endl;
-            return 0;
-        }
-        }
-
     }
-    else if (roleOption == 2) {
 
-        std::cout << "Welcome, Customer!" << std::endl;
-        std::cout << "1. Search Product by Name" << std::endl;
-        std::cout << "2. Search Product by Manufacturer" << std::endl;
-        std::cout << "3. Search Product by Expiry Date" << std::endl;
-        std::cout << "4. Search Product by Type" << std::endl;
-        std::cout << "5. View Purchase History" << std::endl;
-
-        int customerOption;
-        std::cin >> customerOption;
-       
-        switch (customerOption) {
-        case 1: {
-            // TODO
-            std::string productName;
-            std::cout << "Enter the name of the product: ";
-            std::cin >> productName;
-            auto products = warehouse.searchByName(productName);
-            // TODO : process the 'products' vector containing products with the entered name
-            break;
-        }
-        case 2: {
-            // TODO
-            std::string manufacturerName;
-            std::cout << "Enter the manufacturer name: ";
-            std::cin >> manufacturerName;
-            auto products = warehouse.searchByManufacturer(manufacturerName);
-            // TODO: process the 'products' vector containing products from the entered manufacturer
-            break;
-        }
-        case 3: {
-            //TODO
-            std::time_t expiryDate;
-
-            std::cout << "Enter the expiry date (YYYY-MM-DD): ";
-            std::cin >> expiryDate;
-            auto products = warehouse.searchByExpiryDate(expiryDate);
-            // TODO: process the 'products' vector containing products expiring on the entered date
-            break;
-        }
-        case 4: {
-            // TODO
-            int productType;
-            std::cout << "Enter the product type (1 - Perishable, 2 - NonePerishable, 3 - Electronics, 4 - Apparel): ";
-            std::cin >> productType;
-            // Convert user input to ProductType enum
-            ProductType type = static_cast<ProductType>(productType - 1);
-            auto products = warehouse.searchByType(type);
-            // TODO:  process the 'products' vector containing products of the entered type
-            break;
-        }
-        case 5: {
-
-            auto transactions = warehouse.getTransactions();
-            // TODO: process the 'transactions' vector containing transaction history
-            break;
-        }
-        default: {
-            std::cout << "Invalid option for Customer. Exiting program." << std::endl;
-            return 0;
-        }
-        }
-    }
-    else {
-        std::cout << "Invalid role option. Exiting program." << std::endl;
-        return 0;
-    }
-
+    char option;
     std::cout << "Do you want to save the warehouse to a JSON file? (Y/N): ";
     std::cin >> option;
 

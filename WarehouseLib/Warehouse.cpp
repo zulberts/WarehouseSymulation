@@ -68,6 +68,22 @@ const std::vector<std::unique_ptr<Worker>>& Warehouse::getWorkers() const {
 }
 
 void Warehouse::addShipment(std::unique_ptr<Shipment> shipment) {
+    for (const auto& detail : shipment->getProducts()) {
+        for (int i = 0; i < detail.quantity; ++i) {
+            auto product = std::make_unique<Product>(
+                shipment->getReceivingManager(),
+                shipment->getStorageWorker(),
+                detail.item.getName(),
+                detail.item.getPrice(),
+                detail.item.getTax(),
+                "Unknown",
+                detail.item.getExpiryDate(),
+                1,
+                detail.item.getType()
+            );
+            addProduct(std::move(product));
+        }
+    }
     shipments.push_back(std::move(shipment));
 }
 
@@ -84,9 +100,12 @@ void Warehouse::applyDiscounts(double discountRate, std::time_t daysBeforeExpiry
     }
 }
 
-void Warehouse::generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path) {
+void Warehouse::generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions) {
     if (std::dynamic_pointer_cast<Firm>(customer)) {
-        std::vector<ShipmentDetail> products;  // Fill this with relevant products.
+        std::vector<ShipmentDetail> products;
+        for (const auto& transaction : transactions) {
+            products.emplace_back(ShipmentDetail(Item(transaction->getProduct().name, transaction->getProduct().price, transaction->getProduct().type, transaction->getProduct().tax, transaction->getProduct().validity_term), transaction->getQuantity(), transaction->getTransactionTime()));
+        }
         Invoice invoice(invoiceNumber, seller, customer);
         invoice.GenerateDocument(products, path);
     }
@@ -95,9 +114,12 @@ void Warehouse::generateInvoice(const std::string& invoiceNumber, const Person& 
     }
 }
 
-void Warehouse::generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path) {
+void Warehouse::generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions) {
     if (std::dynamic_pointer_cast<PrivatePerson>(customer)) {
-        std::vector<ShipmentDetail> products;  // Fill this with relevant products.
+        std::vector<ShipmentDetail> products;
+        for (const auto& transaction : transactions) {
+            products.emplace_back(ShipmentDetail(Item(transaction->getProduct().name, transaction->getProduct().price, transaction->getProduct().type, transaction->getProduct().tax, transaction->getProduct().validity_term), transaction->getQuantity(), transaction->getTransactionTime()));
+        }
         Receipt receipt(paymentMethod, customer);
         receipt.GenerateDocument(products, path);
     }
@@ -118,7 +140,7 @@ void Warehouse::saveToJson(const std::string& filename) const {
         jProduct["name"] = product.name;
         jProduct["price"] = product.price;
         jProduct["tax"] = product.tax;
-        jProduct["country"] = product.country;
+        jProduct["country"] = "Unknown";
         jProduct["validity_term"] = product.validity_term;
         jProduct["weight"] = product.weight;
         jProduct["sale_date"] = product.getSaleDate();
@@ -139,7 +161,6 @@ void Warehouse::saveToJson(const std::string& filename) const {
 
         j["transactions"].push_back(jTransaction);
     }
-
 
     for (const auto& shipmentPtr : shipments) {
         const Shipment& shipment = *shipmentPtr;
@@ -208,7 +229,7 @@ void Warehouse::loadFromJson(const std::string& filename) {
             jProduct["name"].get<std::string>(),
             jProduct["price"].get<double>(),
             jProduct["tax"].get<double>(),
-            jProduct["country"].get<std::string>(),
+            "Unknown",
             jProduct["validity_term"].get<std::time_t>(),
             jProduct["weight"].get<int>(),
             static_cast<ProductType>(jProduct["type"].get<int>())
@@ -216,7 +237,6 @@ void Warehouse::loadFromJson(const std::string& filename) {
         product.setSaleDate(jProduct["sale_date"].get<std::time_t>());
         this->addProduct(std::make_unique<Product>(product));
     }
-
 
     for (const auto& jTransaction : j["transactions"]) {
         Manager manager("Default", "Manager", 0, 0.0, 0);
@@ -295,4 +315,19 @@ void Warehouse::loadFromJson(const std::string& filename) {
 
         this->addWorker(std::make_unique<Worker>(worker));
     }
+}
+
+void Warehouse::listWorkers() const {
+    for (size_t i = 0; i < workers.size(); ++i) {
+        std::cout << i + 1 << ". " << workers[i]->getName() << " " << workers[i]->getLastName() << std::endl;
+    }
+}
+
+bool Warehouse::fireWorker(size_t index) {
+    if (index < 1 || index > workers.size()) {
+        std::cerr << "Invalid worker index." << std::endl;
+        return false;
+    }
+    workers.erase(workers.begin() + index - 1);
+    return true;
 }
