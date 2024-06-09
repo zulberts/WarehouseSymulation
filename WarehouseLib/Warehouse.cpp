@@ -60,44 +60,40 @@ void Warehouse::addTransaction(std::unique_ptr<Transaction> transaction) {
     transactions.push_back(std::move(transaction));
 }
 
-std::vector<Product*> Warehouse::searchByName(const std::string& name) const {
-    std::vector<Product*> result;
+Product Warehouse::searchByName(const std::string& name) const {
     for (const auto& product : products) {
         if (product->getName() == name) {
-            result.push_back(product.get());
+            return *product;
         }
     }
-    return result;
+    throw std::runtime_error("Product not found");
 }
 
-std::vector<Product*> Warehouse::searchByManufacturer(const std::string& manufacturer) const {
-    std::vector<Product*> result;
+Product Warehouse::searchByManufacturer(const std::string& manufacturer) const {
     for (const auto& product : products) {
         if (product->getFirm().getFirmName() == manufacturer) {
-            result.push_back(product.get());
+            return *product;
         }
     }
-    return result;
+    throw std::runtime_error("Product not found");
 }
 
-std::vector<Product*> Warehouse::searchByExpiryDate(std::time_t expiryDate) const {
-    std::vector<Product*> result;
+Product Warehouse::searchByExpiryDate(std::time_t expiryDate) const {
     for (const auto& product : products) {
         if (product->getExpiryDate() == expiryDate) {
-            result.push_back(product.get());
+            return *product;
         }
     }
-    return result;
+    throw std::runtime_error("Product not found");
 }
 
-std::vector<Product*> Warehouse::searchByType(ProductType type) const {
-    std::vector<Product*> result;
+Product Warehouse::searchByType(ProductType type) const {
     for (const auto& product : products) {
         if (product->getType() == type) {
-            result.push_back(product.get());
+            return *product;
         }
     }
-    return result;
+    throw std::runtime_error("Product not found");
 }
 
 void Warehouse::generateInvoice(const std::string& path) {
@@ -105,8 +101,8 @@ void Warehouse::generateInvoice(const std::string& path) {
         std::cerr << "No transactions available to generate an invoice.\n";
         return;
     }
-    int index = transactions.size(); // Example index, can be changed based on your requirements
-    transactions.back()->printDocument(path, index);
+    size_t index = transactions.size();
+    transactions.back()->printDocument(path, static_cast<int>(index));
 }
 
 void Warehouse::generateReceipt(const std::string& path) {
@@ -114,8 +110,8 @@ void Warehouse::generateReceipt(const std::string& path) {
         std::cerr << "No transactions available to generate a receipt.\n";
         return;
     }
-    int index = transactions.size(); // Example index, can be changed based on your requirements
-    transactions.back()->printDocument(path, index);
+    size_t index = transactions.size();
+    transactions.back()->printDocument(path, static_cast<int>(index));
 }
 
 void Warehouse::saveToJson(const std::string& filename) const {
@@ -224,8 +220,10 @@ void Warehouse::loadFromJson(const std::string& filename) {
         Worker worker(jTransaction["worker"]["name"], jTransaction["worker"]["lastName"], 0, Post::PhysicalLabor, 0.0, 0);
         std::shared_ptr<Customer> customer = std::make_shared<PrivatePerson>(jTransaction["customer"]["name"], "Unknown", 0);
 
+        std::vector<Product> transactionProducts;
+
         auto transaction = std::make_unique<Transaction>(
-            std::vector<Product>{},
+            transactionProducts,
             worker,
             customer
         );

@@ -5,7 +5,8 @@ Shipment::Shipment(const std::vector<ShipmentDetail>& items, const Manager& rece
     : items(items), receivingManager(receivingManager), storageWorker(storageWorker) {
     totalcost = 0.0;
     for (const auto& detail : items) {
-        totalcost += (detail.item.getPrice() + detail.item.getTax()) * detail.quantity;
+        double itemTotal = detail.item.getPrice() * (1 + detail.item.getTax()) * detail.quantity;
+        totalcost += itemTotal;
     }
     std::time_t currentTime = std::time(nullptr);
     deliveryDate = currentTime + 7 * 24 * 60 * 60;

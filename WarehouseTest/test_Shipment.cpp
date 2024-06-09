@@ -1,88 +1,117 @@
-//#include "../WarehouseLib/Shipment.h"
-//#include <gtest/gtest.h>
-//
-//TEST(ShipmentTest, ConstructorAndGetters) {
-//    Manager manager("Micha³", "Nowak", 40, 8000, 10);
-//    Worker worker("Piotr", "Kowalski", 30, Post::WarehouseManagement, 3000, 5);
-//    std::time_t deliveryDate = std::time(nullptr);
-//    std::shared_ptr<Customer> customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
-//
-//    std::vector<ShipmentDetail> items;
-//    items.emplace_back(Item("Laptop", 1000.0, ProductType::Electronics, 0.2, std::time(nullptr) + 86400), 1, std::time(nullptr) + 86400);
-//    items.emplace_back(Item("Banana", 1.0, ProductType::Perishable, 0.1, std::time(nullptr) + 86400), 10, std::time(nullptr) + 86400);
-//
-//    Shipment shipment(items, manager, worker, "DHL", deliveryDate, customer);
-//
-//    EXPECT_EQ(shipment.getProducts().size(), 2);
-//    EXPECT_EQ(shipment.getReceivingManager().getName(), "Micha³");
-//    EXPECT_EQ(shipment.getStorageWorker().getName(), "Piotr");
-//    EXPECT_EQ(shipment.getDeliveryCompany(), "DHL");
-//    EXPECT_DOUBLE_EQ(shipment.getTotalCost(), (1000.0 + 0.2) * 1 + (1.0 + 0.1) * 10);
-//    EXPECT_EQ(shipment.getDeliveryDate(), deliveryDate);
-//    EXPECT_EQ(shipment.getCustomer()->getName(), "Jan");
-//}
-//
-//TEST(ShipmentTest, GetTotalCost) {
-//    Manager manager("Micha³", "Nowak", 40, 8000, 10);
-//    Worker worker("Piotr", "Kowalski", 30, Post::WarehouseManagement, 3000, 5);
-//    std::time_t deliveryDate = std::time(nullptr);
-//    std::shared_ptr<Customer> customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
-//
-//    std::vector<ShipmentDetail> items;
-//    items.emplace_back(Item("Laptop", 1000.0, ProductType::Electronics, 0.2, std::time(nullptr) + 86400), 1, std::time(nullptr) + 86400);
-//    items.emplace_back(Item("Banana", 1.0, ProductType::Perishable, 0.1, std::time(nullptr) + 86400), 10, std::time(nullptr) + 86400);
-//
-//    Shipment shipment(items, manager, worker, "DHL", deliveryDate, customer);
-//    double expectedTotalCost = (1000.0 + 0.2) * 1 + (1.0 + 0.1) * 10;
-//    EXPECT_DOUBLE_EQ(shipment.getTotalCost(), expectedTotalCost);
-//}
-//
-//TEST(ShipmentTest, AddProducts) {
-//    Manager manager("Micha³", "Nowak", 40, 8000, 10);
-//    Worker worker("Piotr", "Kowalski", 30, Post::WarehouseManagement, 3000, 5);
-//    std::time_t deliveryDate = std::time(nullptr);
-//    std::shared_ptr<Customer> customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
-//
-//    std::vector<ShipmentDetail> items;
-//    items.emplace_back(Item("Laptop", 1000.0, ProductType::Electronics, 0.2, std::time(nullptr) + 86400), 1, std::time(nullptr) + 86400);
-//
-//    Shipment shipment(items, manager, worker, "DHL", deliveryDate, customer);
-//
-//    std::vector<ShipmentDetail> newItems;
-//    newItems.emplace_back(Item("Banana", 1.0, ProductType::Perishable, 0.1, std::time(nullptr) + 86400), 10, std::time(nullptr) + 86400);
-//    shipment.addProducts(newItems);
-//
-//    EXPECT_EQ(shipment.getProducts().size(), 2);
-//    double expectedTotalCost = (1000.0 + 0.2) * 1 + (1.0 + 0.1) * 10;
-//    EXPECT_DOUBLE_EQ(shipment.getTotalCost(), expectedTotalCost);
-//}
-//
-//TEST(ShipmentTest, GetCustomer) {
-//    Manager manager("Micha³", "Nowak", 40, 8000, 10);
-//    Worker worker("Piotr", "Kowalski", 30, Post::WarehouseManagement, 3000, 5);
-//    std::time_t deliveryDate = std::time(nullptr);
-//    std::shared_ptr<Customer> customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
-//
-//    std::vector<ShipmentDetail> items;
-//    items.emplace_back(Item("Laptop", 1000.0, ProductType::Electronics, 0.2, std::time(nullptr) + 86400), 1, std::time(nullptr) + 86400);
-//
-//    Shipment shipment(items, manager, worker, "DHL", deliveryDate, customer);
-//
-//    EXPECT_EQ(shipment.getCustomer()->getName(), "Jan");
-//    EXPECT_EQ(shipment.getCustomer()->getLastName(), "Kowalski");
-//    EXPECT_EQ(shipment.getCustomer()->getAge(), 30);
-//}
-//
-//TEST(ShipmentTest, GetDeliveryDate) {
-//    Manager manager("Micha³", "Nowak", 40, 8000, 10);
-//    Worker worker("Piotr", "Kowalski", 30, Post::WarehouseManagement, 3000, 5);
-//    std::time_t deliveryDate = std::time(nullptr);
-//    std::shared_ptr<Customer> customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
-//
-//    std::vector<ShipmentDetail> items;
-//    items.emplace_back(Item("Laptop", 1000.0, ProductType::Electronics, 0.2, std::time(nullptr) + 86400), 1, std::time(nullptr) + 86400);
-//
-//    Shipment shipment(items, manager, worker, "DHL", deliveryDate, customer);
-//
-//    EXPECT_EQ(shipment.getDeliveryDate(), deliveryDate);
-//}
+#include "../WarehouseLib/Shipment.h"
+#include <gtest/gtest.h>
+#include <ctime>
+
+TEST(ShipmentTest, ConstructorAndGetters) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item1("Test Item 1", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    Item item2("Test Item 2", 20.0, ProductType::Apparel, 0.2, expiryDate, 300, firm);
+
+    ShipmentDetail detail1(item1, 5);
+    ShipmentDetail detail2(item2, 10);
+
+    std::vector<ShipmentDetail> items = { detail1, detail2 };
+
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    EXPECT_EQ(shipment.getProducts().size(), 2);
+    EXPECT_EQ(shipment.getProducts()[0].item.getName(), "Test Item 1");
+    EXPECT_EQ(shipment.getProducts()[0].quantity, 5);
+    EXPECT_EQ(shipment.getProducts()[1].item.getName(), "Test Item 2");
+    EXPECT_EQ(shipment.getProducts()[1].quantity, 10);
+
+    EXPECT_EQ(shipment.getReceivingManager().getName(), "ManagerName");
+    EXPECT_EQ(shipment.getReceivingManager().getLastName(), "ManagerLastName");
+
+    EXPECT_EQ(shipment.getStorageWorker().getName(), "WorkerName");
+    EXPECT_EQ(shipment.getStorageWorker().getLastName(), "WorkerLastName");
+
+    double expectedTotalCost = (10.0 * 1.1) * 5 + (20.0 * 1.2) * 10;
+    EXPECT_DOUBLE_EQ(shipment.getTotalCost(), expectedTotalCost);
+
+    std::time_t currentTime = std::time(nullptr);
+    EXPECT_NEAR(shipment.getDeliveryDate(), currentTime + 7 * 24 * 60 * 60, 1);
+}
+
+TEST(ShipmentTest, GetProducts) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item("Test Item", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    ShipmentDetail detail(item, 10);
+    std::vector<ShipmentDetail> items = { detail };
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    const auto& products = shipment.getProducts();
+    EXPECT_EQ(products.size(), 1);
+    EXPECT_EQ(products[0].item.getName(), "Test Item");
+    EXPECT_EQ(products[0].quantity, 10);
+}
+
+TEST(ShipmentTest, GetReceivingManager) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item("Test Item", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    ShipmentDetail detail(item, 10);
+    std::vector<ShipmentDetail> items = { detail };
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    Manager manager = shipment.getReceivingManager();
+    EXPECT_EQ(manager.getName(), "ManagerName");
+    EXPECT_EQ(manager.getLastName(), "ManagerLastName");
+}
+
+TEST(ShipmentTest, GetStorageWorker) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item("Test Item", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    ShipmentDetail detail(item, 10);
+    std::vector<ShipmentDetail> items = { detail };
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    Worker worker = shipment.getStorageWorker();
+    EXPECT_EQ(worker.getName(), "WorkerName");
+    EXPECT_EQ(worker.getLastName(), "WorkerLastName");
+}
+
+TEST(ShipmentTest, GetTotalCost) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item("Test Item", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    ShipmentDetail detail(item, 10);
+    std::vector<ShipmentDetail> items = { detail };
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    double expectedTotalCost = (10.0 * 1.1) * 10;
+    EXPECT_DOUBLE_EQ(shipment.getTotalCost(), expectedTotalCost);
+}
+
+TEST(ShipmentTest, GetDeliveryDate) {
+    std::time_t expiryDate = std::time(nullptr);
+    Firm firm("FirmName", "FirmID", "Country");
+    Item item("Test Item", 10.0, ProductType::Electronics, 0.1, expiryDate, 500, firm);
+    ShipmentDetail detail(item, 10);
+    std::vector<ShipmentDetail> items = { detail };
+    Manager receivingManager("ManagerName", "ManagerLastName", 40, 8000, 10);
+    Worker storageWorker("WorkerName", "WorkerLastName", 30, Post::WarehouseManagement, 3000, 5);
+
+    Shipment shipment(items, receivingManager, storageWorker);
+
+    std::time_t currentTime = std::time(nullptr);
+    EXPECT_NEAR(shipment.getDeliveryDate(), currentTime + 7 * 24 * 60 * 60, 1);
+}

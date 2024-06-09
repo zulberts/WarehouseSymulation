@@ -30,10 +30,10 @@ public:
     void addManager(std::unique_ptr<Manager> manager);
     void addTransaction(std::unique_ptr<Transaction> transaction);
 
-    std::vector<Product*> searchByName(const std::string& name) const;
-    std::vector<Product*> searchByManufacturer(const std::string& manufacturer) const;
-    std::vector<Product*> searchByExpiryDate(std::time_t expiryDate) const;
-    std::vector<Product*> searchByType(ProductType type) const;
+    Product searchByName(const std::string& name) const;
+    Product searchByManufacturer(const std::string& manufacturer) const;
+    Product searchByExpiryDate(std::time_t expiryDate) const;
+    Product searchByType(ProductType type) const;
 
     void generateInvoice(const std::string& path);
     void generateReceipt(const std::string& path);

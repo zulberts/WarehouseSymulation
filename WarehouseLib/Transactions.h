@@ -16,6 +16,8 @@ public:
     std::shared_ptr<Customer> getCustomer() const;
     const Worker& getWorker() const;
     void printDocument(const std::string& path, int index);
+    double getTotalPrice() const;
+    double getTotalTax() const;
 
 private:
     std::vector<Product> products;

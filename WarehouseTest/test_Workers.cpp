@@ -13,9 +13,9 @@ TEST(WorkerTest, ConstructorAndGetters) {
 
 TEST(WorkerTest, AddOpinionAndGetOpinions) {
     Worker worker("Ewa", "Grzyb", 28, Post::PhysicalLabor, 3000.0, 2);
-    worker.addOpinion("Œwietny pracownik");
+    worker.addOpinion("wietny pracownik");
     worker.addOpinion("Zawsze punktualna");
-    EXPECT_EQ(worker.getOpinions(), "Opinions:\n1. Œwietny pracownik\n2. Zawsze punktualna\n");
+    EXPECT_EQ(worker.getOpinions(), "Opinions:\n1. wietny pracownik\n2. Zawsze punktualna\n");
 }
 
 TEST(WorkerTest, GetPost) {
@@ -24,19 +24,19 @@ TEST(WorkerTest, GetPost) {
 }
 
 TEST(WorkerTest, GetSalary) {
-    Worker worker("Robert", "Wiœniewski", 40, Post::WarehouseManagement, 6000.0, 10);
+    Worker worker("Robert", "Winiewski", 40, Post::WarehouseManagement, 6000.0, 10);
     EXPECT_DOUBLE_EQ(worker.getSalary(), 6000.0);
 }
 
 TEST(WorkerTest, GetExperience) {
-    Worker worker("Karol", "Zieliñski", 35, Post::PhysicalLabor, 3500.0, 7);
+    Worker worker("Karol", "Zieliski", 35, Post::PhysicalLabor, 3500.0, 7);
     EXPECT_EQ(worker.getExperience(), 7);
 }
 
 TEST(WorkerTest, OperatorSquareBrackets) {
-    Worker worker("Dawid", "Bia³y", 32, Post::Other, 4500.0, 4);
-    worker.addOpinion("Dobry gracz zespo³owy");
-    EXPECT_EQ(worker[0], "Dobry gracz zespo³owy");
+    Worker worker("Dawid", "Biay", 32, Post::Other, 4500.0, 4);
+    worker.addOpinion("Dobry gracz zespoowy");
+    EXPECT_EQ(worker[0], "Dobry gracz zespoowy");
 }
 
 TEST(WorkerTest, OperatorSquareBracketsOutOfRange) {
@@ -47,26 +47,26 @@ TEST(WorkerTest, OperatorSquareBracketsOutOfRange) {
 
 TEST(WorkerTest, AddOpinionAndRetrieve) {
     Worker worker("Franciszek", "Zielony", 45, Post::PhysicalLabor, 4000.0, 20);
-    worker.addOpinion("Doœwiadczony");
+    worker.addOpinion("Dowiadczony");
     worker.addOpinion("Mentor dla innych");
-    EXPECT_EQ(worker[0], "Doœwiadczony");
+    EXPECT_EQ(worker[0], "Dowiadczony");
     EXPECT_EQ(worker[1], "Mentor dla innych");
 }
 
 TEST(ManagerTest, ConstructorAndGetters) {
-    Manager manager("Grzegorz", "Król", 50, 8000.0, 25);
+    Manager manager("Grzegorz", "Krl", 50, 8000.0, 25);
     EXPECT_EQ(manager.getName(), "Grzegorz");
-    EXPECT_EQ(manager.getLastName(), "Król");
+    EXPECT_EQ(manager.getLastName(), "Krl");
     EXPECT_EQ(manager.getAge(), 50);
     EXPECT_DOUBLE_EQ(manager.getSalary(), 8000.0);
     EXPECT_EQ(manager.getExperience(), 25);
 }
 
 TEST(ManagerTest, EmployWorker) {
-    Manager manager("Helena", "Królowa", 55, 9000.0, 30);
-    Worker worker("Igor", "Ksi¹¿ê", 30, Post::Other, 4000.0, 5);
+    Manager manager("Helena", "Krlowa", 55, 9000.0, 30);
+    Worker worker("Igor", "Ksi", 30, Post::Other, 4000.0, 5);
     manager.employWorker(&worker);
-    EXPECT_EQ(manager.generateReport(), "Employee performance report:\nIgor Ksi¹¿ê\nOpinions:\n");
+    EXPECT_EQ(manager.generateReport(), "Employee performance report:\nIgor Ksi\nOpinions:\n");
 }
 
 TEST(ManagerTest, DismissWorker) {

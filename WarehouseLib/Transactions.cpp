@@ -97,3 +97,11 @@ void Transaction::printDocument(const std::string& path, int index) {
     file.close();
     std::cout << "Document generated and saved to " << path << "\n";
 }
+
+double Transaction::getTotalPrice() const {
+    return totalprice;
+}
+
+double Transaction::getTotalTax() const {
+    return totaltax;
+}
