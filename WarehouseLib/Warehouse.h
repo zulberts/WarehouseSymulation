@@ -3,12 +3,10 @@
 #include <memory>
 #include <string>
 #include <algorithm>
-#include <fstream>
 #include "Items.h"
 #include "Transactions.h"
 #include "Workers.h"
 #include "Shipment.h"
-#include "FileCreation.h"
 
 class Warehouse {
 private:
@@ -37,14 +35,12 @@ public:
     std::vector<Product*> searchByExpiryDate(std::time_t expiryDate) const;
     std::vector<Product*> searchByType(ProductType type) const;
 
-    //void applyDiscounts(double discountRate, std::time_t daysBeforeExpiry);
+    void generateInvoice(const std::string& path);
+    void generateReceipt(const std::string& path);
 
-    //void generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions);
-    //void generateReceipt(const std::string& paymentMethod, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions);
+    void saveToJson(const std::string& filename) const;
+    void loadFromJson(const std::string& filename);
 
-    //void saveToJson(const std::string& filename) const;
-    //void loadFromJson(const std::string& filename);
-
-    //void listWorkers() const;
-    //bool fireWorker(size_t index);
+    void listWorkers() const;
+    bool fireWorker(size_t index);
 };

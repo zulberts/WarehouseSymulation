@@ -37,22 +37,17 @@ public:
 struct ShipmentDetail {
     Item item;
     int quantity;
-    std::time_t arrivalDate;
-    ShipmentDetail(const Item& item, int quantity, std::time_t arrivalDate);
+    ShipmentDetail(const Item& item, int quantity);
 };
 
 class Product : public Item {
 private:
     Manager receivingManager;
     Worker storageWorker;
-    std::time_t saleDate;
-    bool isSold;
+    int quantity;
 
 public:
-    Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const Firm& firm, std::time_t expiryDate, int weight, ProductType type);
-
-    std::time_t getSaleDate() const;
-    void setSaleDate(std::time_t newSaleDate);
-    bool getIsSold() const;
-    //bool isAvailable() const;
+    Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const Firm& firm, std::time_t expiryDate, int weight, ProductType type, int quantity);
+    void updateQuantity(int quantity_sold);
+    int getQuantity();
 };

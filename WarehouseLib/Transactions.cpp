@@ -1,25 +1,14 @@
 #include "Transactions.h"
-#include <algorithm>
+#include <fstream>
 #include <iomanip>
+#include <ctime>
+#include <iostream>
+#include <stdexcept>
 
-//DONE
-
-Transaction::Transaction(std::vector<std::pair<Product, int>>& products, const Worker& worker, std::shared_ptr<Customer> customer)
+Transaction::Transaction(std::vector<Product>& products, const Worker& worker, std::shared_ptr<Customer> customer)
     : products(products), worker(worker), customer(customer), canceled(false) {
     setTransactionTime();
-}
-
-double Transaction::calculateTotalPrice() const {
-    double totalPrice = 0;
-    for (const auto& item : products) {
-        totalPrice += item.first.getPrice() * item.second;
-    }
-
-    return totalPrice;
-}
-
-double Transaction::calculateTax(double taxRate) const {
-    return calculateTotalPrice() * taxRate;
+    calculateTotalPriceAndTax();
 }
 
 void Transaction::cancel() {
@@ -34,7 +23,7 @@ std::time_t Transaction::getTransactionTime() const {
     return transactionTime;
 }
 
-std::vector<std::pair<Product, int>> Transaction::getProducts() const {
+std::vector<Product> Transaction::getProducts() const {
     return products;
 }
 
@@ -50,46 +39,61 @@ void Transaction::setTransactionTime() {
     transactionTime = std::time(nullptr);
 }
 
-
-void TransactionRegister::addTransaction(std::unique_ptr<Transaction> transaction) {
-    transactions.push_back(std::move(transaction));
-}
-
-void TransactionRegister::removeCanceledTransactions() {
-    transactions.erase(std::remove_if(transactions.begin(), transactions.end(),
-        [](const std::unique_ptr<Transaction>& t) { return t->isCanceled(); }), transactions.end());
-}
-
-std::vector<Transaction*> TransactionRegister::filterByDate(std::time_t from, std::time_t to) const {
-    std::vector<Transaction*> result;
-    for (const auto& t : transactions) {
-        if (t->getTransactionTime() >= from && t->getTransactionTime() <= to) {
-            result.push_back(t.get());
-        }
+void Transaction::calculateTotalPriceAndTax() {
+    totalprice = 0;
+    totaltax = 0;
+    for (const auto& item : products) {
+        totalprice += item.getPrice();
+        totaltax += item.getPrice() * item.getTax();
     }
-    return result;
 }
 
-std::vector<Transaction*> TransactionRegister::filterByCustomer(const std::shared_ptr<Customer>& customer) const {
-    std::vector<Transaction*> result;
-    for (const auto& t : transactions) {
-        if (t->getCustomer()->getName() == customer->getName()) {
-            result.push_back(t.get());
-        }
+std::string Transaction::getCurrentDateTime() const {
+    std::time_t t = std::time(nullptr);
+    std::tm tm;
+    char date[100];
+
+    if (localtime_s(&tm, &t)) {
+        throw std::runtime_error("Failed to get current time");
     }
-    return result;
+
+    std::strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", &tm);
+    return date;
 }
 
-std::map<std::string, int> TransactionRegister::mostFrequentlySoldProducts() const {
-    std::map<std::string, int> productFrequency;
-    for (const auto& transaction : transactions) {
-        for (const auto& item : transaction->getProducts()) {
-            productFrequency[item.first.getName()] += item.second;
-        }
+void Transaction::printDocument(const std::string& path, int index) {
+    std::ofstream file;
+    if (dynamic_cast<PrivatePerson*>(customer.get())) {
+        file.open(path + "/paragon_" + std::to_string(index) + ".txt");
+        file << "RECEIPT\n";
+        file << "Date: " << getCurrentDateTime() << "\n";
+        file << "--------------------------------------------------\n";
+        file << std::left << std::setw(20) << "Product" << std::setw(10) << "Price" << std::setw(10) << "Tax" << std::setw(10) << "Total" << "\n";
+        file << "--------------------------------------------------\n";
     }
-    return productFrequency;
-}
+    else {
+        file.open(path + "/faktura_" + std::to_string(index) + ".txt");
+        file << "INVOICE\n";
+        file << "Invoice Number: " << index << "\n";
+        file << "Issue Date: " << getCurrentDateTime() << "\n";
+        file << "--------------------------------------------------\n";
+        file << "Seller: " << worker.getName() << "\n";
+        file << "--------------------------------------------------\n";
+        file << "Buyer: " << dynamic_cast<Firm*>(customer.get())->getFirmName() << "\n";
+        file << "--------------------------------------------------\n";
+        file << std::left << std::setw(20) << "Product" << std::setw(10) << "Price" << std::setw(10) << "Tax" << std::setw(10) << "Total" << "\n";
+        file << "--------------------------------------------------\n";
+    }
 
-const std::vector<std::unique_ptr<Transaction>>& TransactionRegister::getTransactions() const {
-    return transactions;
+    double totalAmount = 0;
+    for (const auto& item : products) {
+        double totalProductPrice = item.getPrice() + item.getPrice() * item.getTax();
+        file << std::left << std::setw(20) << item.getName() << std::setw(10) << item.getPrice() << std::setw(10) << item.getTax() << std::setw(10) << totalProductPrice << "\n";
+        totalAmount += totalProductPrice;
+    }
+
+    file << "--------------------------------------------------\n";
+    file << std::left << std::setw(30) << "Total:" << totalAmount << "$\n";
+    file.close();
+    std::cout << "Document generated and saved to " << path << "\n";
 }
