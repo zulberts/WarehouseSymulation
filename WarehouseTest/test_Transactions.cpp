@@ -1,9 +1,9 @@
-//#include <gtest/gtest.h>
-//#include "../WarehouseLib/Transactions.h"
-//#include "../WarehouseLib/Items.h"
-//#include "../WarehouseLib/Workers.h"
-//#include "../WarehouseLib/Customers.h"
-//
+#include <gtest/gtest.h>
+#include "../WarehouseLib/Transactions.h"
+#include "../WarehouseLib/Items.h"
+#include "../WarehouseLib/Workers.h"
+#include "../WarehouseLib/Customers.h"
+
 //TEST(TransactionTest, Constructor) {
 //    Manager manager("Manager", "Lastname", 40, 10000.0, 10);
 //    Worker worker("Worker", "Lastname", 30, Post::WarehouseManagement, 5000.0, 5);
@@ -25,9 +25,7 @@
 //    std::shared_ptr<Customer> customer = std::make_shared<PrivatePerson>("Customer", "Lastname", 25);
 //
 //    Transaction transaction(product, 5, 50.0, worker, customer);
-//
 //    double tax = transaction.calculateTax(0.1);
-//    double discount = transaction.calculateDiscount(0.2);
 //
 //    EXPECT_DOUBLE_EQ(tax, 25.0);
 //    EXPECT_DOUBLE_EQ(discount, 50.0);
@@ -136,7 +134,6 @@
 //    registr.addTransaction(std::move(transaction));
 //
 //    EXPECT_EQ(registr.getTransactions().size(), 1);
-//    EXPECT_EQ(registr.getCanceledTransactions().size(), 0);
 //}
 //
 //TEST(TransactionRegisterTest, RemoveCanceledTransactions) {
@@ -155,6 +152,30 @@
 //    registr.removeCanceledTransactions();
 //
 //    EXPECT_EQ(registr.getTransactions().size(), 1);
-//    EXPECT_EQ(registr.getCanceledTransactions().size(), 1);
 //}
-//
+
+
+TEST(TransactionTest, CalculateTotalPrice) {
+
+    std::time_t expiryDate = std::time(nullptr);
+    Manager manager("Grzegorz", "Król", 50, 8000.0, 25);
+    Worker worker("Franciszek", "Zielony", 45, Post::PhysicalLabor, 4000.0, 20);
+    Firm firm("FirmName", "FirmID", "Country");
+    Product product1(manager, worker, "Test Product1", 20.0, 0.2, firm, expiryDate, 100, ProductType::Apparel);
+    Product product2(manager, worker, "Test Product2", 100.0, 0.2, firm, expiryDate, 1000, ProductType::Electronics);
+
+    std::vector<std::pair<Product, int>> products = { {product1, 2}, {product2, 1} };
+    auto customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
+    Transaction transaction(products, worker, customer);
+
+    EXPECT_DOUBLE_EQ(transaction.calculateTotalPrice(), 140.0);
+    EXPECT_DOUBLE_EQ(transaction.calculateTax(0.1), 14.0);
+
+    TransactionRegister registr;
+    auto transaction2 = std::make_unique<Transaction>(products, worker, customer);
+    registr.addTransaction(std::move(transaction2));
+    EXPECT_EQ(registr.getTransactions().size(), 1);
+
+    transaction.cancel();
+    EXPECT_TRUE(transaction.isCanceled());
+}
