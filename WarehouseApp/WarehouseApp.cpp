@@ -39,12 +39,15 @@ int main() {
             warehouse.loadFromJson("warehouse.json");
             std::cout << "Warehouse loaded successfully." << std::endl;
         }
-        catch (const std::exception& e) {
-            std::cerr << "Error loading warehouse: " << e.what() << std::endl;
-            std::cout << "No warehouses found. Do you want to create a new one? (Y/N): ";
+        catch (...) {
+            std::cout << "No existing warehouses found. Do you want to create a new one? (Y/N): ";
             std::cin >> option;
             if (option == 'Y' || option == 'y') {
                 createNewWarehouse(warehouse);
+            }
+            else {
+                std::cout << "Exiting program." << std::endl;
+                return 0;
             }
         }
     }

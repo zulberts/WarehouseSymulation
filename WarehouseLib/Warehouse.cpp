@@ -73,7 +73,7 @@ void Warehouse::addTransaction(const std::vector<ShipmentDetail>& items, std::sh
                 Product buyingProduct = *product;
                 buyingProduct.updateQuantity(detail.quantity);
                 productsToBuy.push_back(buyingProduct);
-                product->updateQuantity(-detail.quantity);
+                //product->updateQuantity(detail.quantity);
                 break;
             }
         }
@@ -154,8 +154,9 @@ void Warehouse::makePurchase() {
 
             itemsToBuy.push_back(ShipmentDetail(*productPtr, quantityToBuy));
 
-            productPtr->updateQuantity(-quantityToBuy);
+            productPtr->updateQuantity(quantityToBuy);
             remainingQuantity -= quantityToBuy;
+            break;
         }
     }
 
@@ -315,111 +316,125 @@ void Warehouse::loadFromJson(const std::string& filename) {
     }
 
     nlohmann::json j;
-    file >> j;
+    try {
+        file >> j;
+    }
+    catch (const std::exception& e) {
+        file.close();
+        throw std::runtime_error(std::string("Error reading JSON from file: ") + e.what());
+    }
     file.close();
 
-    for (const auto& jProduct : j["products"]) {
-        Manager manager("Default", "Manager", 0, 0.0, 0);
-        Worker worker("Default", "Worker", 0, Post::PhysicalLabor, 0.0, 0);
-
-        auto product = std::make_unique<Product>(
-            manager,
-            worker,
-            jProduct["name"].get<std::string>(),
-            jProduct["price"].get<double>(),
-            jProduct["tax"].get<double>(),
-            Firm(jProduct["firm"].get<std::string>(), "DefaultID", "DefaultCountry"),
-            jProduct["expiryDate"].get<std::time_t>(),
-            jProduct["weight"].get<int>(),
-            static_cast<ProductType>(jProduct["type"].get<int>()),
-            jProduct["quantity"].get<int>()
-        );
-        products.push_back(std::move(product));
-    }
-
-    for (const auto& jTransaction : j["transactions"]) {
-        Worker worker(jTransaction["worker"]["name"], jTransaction["worker"]["lastName"], 0, Post::PhysicalLabor, 0.0, 0);
-        std::shared_ptr<Customer> customer = std::make_shared<PrivatePerson>(jTransaction["customer"]["name"], "Unknown", 0);
-
-        std::vector<Product> transactionProducts;
-        for (const auto& jProduct : jTransaction["products"]) {
+    try {
+        for (const auto& jProduct : j.at("products")) {
             Manager manager("Default", "Manager", 0, 0.0, 0);
-            Worker productWorker("Default", "Worker", 0, Post::PhysicalLabor, 0.0, 0);
+            Worker worker("Default", "Worker", 0, Post::PhysicalLabor, 0.0, 0);
 
-            Product product(
+            auto product = std::make_unique<Product>(
                 manager,
-                productWorker,
-                jProduct["name"].get<std::string>(),
-                jProduct["price"].get<double>(),
-                jProduct["tax"].get<double>(),
-                Firm(jProduct["firm"].get<std::string>(), "DefaultID", "DefaultCountry"),
-                jProduct["expiryDate"].get<std::time_t>(),
-                jProduct["weight"].get<int>(),
-                static_cast<ProductType>(jProduct["type"].get<int>()),
-                jProduct["quantity"].get<int>()
+                worker,
+                jProduct.at("name").get<std::string>(),
+                jProduct.at("price").get<double>(),
+                jProduct.at("tax").get<double>(),
+                Firm(jProduct.at("firm").get<std::string>(), "DefaultID", "DefaultCountry"),
+                jProduct.at("expiryDate").get<std::time_t>(),
+                jProduct.at("weight").get<int>(),
+                static_cast<ProductType>(jProduct.at("type").get<int>()),
+                jProduct.at("quantity").get<int>()
             );
-            transactionProducts.push_back(product);
+            products.push_back(std::move(product));
         }
 
-        auto transaction = std::make_unique<Transaction>(
-            transactionProducts,
-            worker,
-            customer
-        );
-        if (jTransaction["canceled"].get<bool>()) {
-            transaction->cancel();
-        }
-        transactions.push_back(std::move(transaction));
-    }
+        for (const auto& jTransaction : j.at("transactions")) {
+            Worker worker(jTransaction.at("worker").at("name"), jTransaction.at("worker").at("lastName"), 0, Post::PhysicalLabor, 0.0, 0);
+            std::shared_ptr<Customer> customer = std::make_shared<PrivatePerson>(jTransaction.at("customer").at("name"), "Unknown", 0);
 
-    for (const auto& jShipment : j["shipments"]) {
-        Manager receivingManager(jShipment["receivingManager"]["name"], jShipment["receivingManager"]["lastName"], 0, 0.0, 0);
-        Worker storageWorker(jShipment["storageWorker"]["name"], jShipment["storageWorker"]["lastName"], 0, Post::PhysicalLabor, 0.0, 0);
+            std::vector<Product> transactionProducts;
+            for (const auto& jProduct : jTransaction.at("products")) {
+                Manager manager("Default", "Manager", 0, 0.0, 0);
+                Worker productWorker("Default", "Worker", 0, Post::PhysicalLabor, 0.0, 0);
 
-        std::vector<ShipmentDetail> items;
-        for (const auto& jItem : jShipment["items"]) {
-            Item item(
-                jItem["name"].get<std::string>(),
-                jItem["price"].get<double>(),
-                static_cast<ProductType>(jItem["type"].get<int>()),
-                jItem["tax"].get<double>(),
-                jItem["expiryDate"].get<std::time_t>(),
-                jItem["weight"].get<int>(),
-                Firm("DefaultFirm", "DefaultID", "DefaultCountry")
+                Product product(
+                    manager,
+                    productWorker,
+                    jProduct.at("name").get<std::string>(),
+                    jProduct.at("price").get<double>(),
+                    jProduct.at("tax").get<double>(),
+                    Firm(jProduct.at("firm").get<std::string>(), "DefaultID", "DefaultCountry"),
+                    jProduct.at("expiryDate").get<std::time_t>(),
+                    jProduct.at("weight").get<int>(),
+                    static_cast<ProductType>(jProduct.at("type").get<int>()),
+                    jProduct.at("quantity").get<int>()
+                );
+                transactionProducts.push_back(product);
+            }
+
+            auto transaction = std::make_unique<Transaction>(
+                transactionProducts,
+                worker,
+                customer
             );
-            int quantity = jItem["quantity"];
-            items.emplace_back(ShipmentDetail(item, quantity));
+            if (jTransaction.at("canceled").get<bool>()) {
+                transaction->cancel();
+            }
+            transactions.push_back(std::move(transaction));
         }
 
-        auto shipment = std::make_unique<Shipment>(
-            items,
-            receivingManager,
-            storageWorker
-        );
-        shipments.push_back(std::move(shipment));
-    }
+        for (const auto& jShipment : j.at("shipments")) {
+            Manager receivingManager(jShipment.at("receivingManager").at("name"), jShipment.at("receivingManager").at("lastName"), 0, 0.0, 0);
+            Worker storageWorker(jShipment.at("storageWorker").at("name"), jShipment.at("storageWorker").at("lastName"), 0, Post::PhysicalLabor, 0.0, 0);
 
-    for (const auto& jWorker : j["workers"]) {
-        auto worker = std::make_unique<Worker>(
-            jWorker["name"].get<std::string>(),
-            jWorker["lastName"].get<std::string>(),
-            jWorker["age"].get<int>(),
-            static_cast<Post>(jWorker["post"].get<int>()),
-            jWorker["salary"].get<double>(),
-            jWorker["experience"].get<int>()
-        );
-        workers.push_back(std::move(worker));
-    }
+            std::vector<ShipmentDetail> items;
+            for (const auto& jItem : jShipment.at("items")) {
+                Item item(
+                    jItem.at("name").get<std::string>(),
+                    jItem.at("price").get<double>(),
+                    static_cast<ProductType>(jItem.at("type").get<int>()),
+                    jItem.at("tax").get<double>(),
+                    jItem.at("expiryDate").get<std::time_t>(),
+                    jItem.at("weight").get<int>(),
+                    Firm("DefaultFirm", "DefaultID", "DefaultCountry")
+                );
+                int quantity = jItem.at("quantity").get<int>();
+                items.emplace_back(ShipmentDetail(item, quantity));
+            }
 
-    for (const auto& jManager : j["managers"]) {
-        auto manager = std::make_unique<Manager>(
-            jManager["name"].get<std::string>(),
-            jManager["lastName"].get<std::string>(),
-            jManager["age"].get<int>(),
-            jManager["salary"].get<double>(),
-            jManager["experience"].get<int>()
-        );
-        managers.push_back(std::move(manager));
+            auto shipment = std::make_unique<Shipment>(
+                items,
+                receivingManager,
+                storageWorker
+            );
+            shipments.push_back(std::move(shipment));
+        }
+
+        for (const auto& jWorker : j.at("workers")) {
+            auto worker = std::make_unique<Worker>(
+                jWorker.at("name").get<std::string>(),
+                jWorker.at("lastName").get<std::string>(),
+                jWorker.at("age").get<int>(),
+                static_cast<Post>(jWorker.at("post").get<int>()),
+                jWorker.at("salary").get<double>(),
+                jWorker.at("experience").get<int>()
+            );
+            workers.push_back(std::move(worker));
+        }
+
+        for (const auto& jManager : j.at("managers")) {
+            auto manager = std::make_unique<Manager>(
+                jManager.at("name").get<std::string>(),
+                jManager.at("lastName").get<std::string>(),
+                jManager.at("age").get<int>(),
+                jManager.at("salary").get<double>(),
+                jManager.at("experience").get<int>()
+            );
+            managers.push_back(std::move(manager));
+        }
+    }
+    catch (const nlohmann::json::exception& e) {
+        throw std::runtime_error(std::string("JSON parsing error: ") + e.what());
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Error while processing JSON data: ") + e.what());
     }
 }
 

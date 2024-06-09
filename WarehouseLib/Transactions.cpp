@@ -86,10 +86,15 @@ void Transaction::printDocument(const std::string& path, int index) {
     }
 
     double totalAmount = 0;
+    int i = 0;
     for (const auto& item : products) {
-        double totalProductPrice = item.getPrice() + item.getPrice() * item.getTax();
-        file << std::left << std::setw(20) << item.getName() << std::setw(10) << item.getPrice() << std::setw(10) << item.getTax() << std::setw(10) << totalProductPrice << "\n";
-        totalAmount += totalProductPrice;
+        int productQuantity = item.getQuantity();
+        for (i; i < productQuantity; ++i)
+        {
+            double totalProductPrice = item.getPrice() + item.getPrice() * item.getTax();
+            file << std::left << std::setw(20) << item.getName() << std::setw(10) << item.getPrice() << std::setw(10) << item.getTax() << std::setw(10) << totalProductPrice << "\n";
+            totalAmount += totalProductPrice;
+        }
     }
 
     file << "--------------------------------------------------\n";
