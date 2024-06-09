@@ -1,105 +1,111 @@
-//#include "Warehouse.h"
-//#include <nlohmann/json.hpp>
-//
-////DONE
-//
-//void Warehouse::addProduct(std::unique_ptr<Product> product) {
-//    products.push_back(std::move(product));
-//}
-//
-//const std::vector<std::unique_ptr<Product>>& Warehouse::getProducts() const {
-//    return products;
-//}
-//
-//std::vector<Product*> Warehouse::searchByName(const std::string& name) const {
-//    std::vector<Product*> result;
-//    for (const auto& product : products) {
-//        if (product->name == name) {
-//            result.push_back(product.get());
-//        }
-//    }
-//    return result;
-//}
-//
-//std::vector<Product*> Warehouse::searchByManufacturer(const std::string& manufacturer) const {
-//    std::vector<Product*> result;
-//    for (const auto& product : products) {
-//        if (product->country == manufacturer) {
-//            result.push_back(product.get());
-//        }
-//    }
-//    return result;
-//}
-//
-//std::vector<Product*> Warehouse::searchByExpiryDate(std::time_t expiryDate) const {
-//    std::vector<Product*> result;
-//    for (const auto& product : products) {
-//        if (product->validity_term == expiryDate) {
-//            result.push_back(product.get());
-//        }
-//    }
-//    return result;
-//}
-//
-//std::vector<Product*> Warehouse::searchByType(ProductType type) const {
-//    std::vector<Product*> result;
-//    for (const auto& product : products) {
-//        if (product->type == type) {
-//            result.push_back(product.get());
-//        }
-//    }
-//    return result;
-//}
-//
-//void Warehouse::addTransaction(std::unique_ptr<Transaction> transaction) {
-//    transactionRegister.addTransaction(std::move(transaction));
-//}
-//
-//const std::vector<std::unique_ptr<Transaction>>& Warehouse::getTransactions() const {
-//    return transactionRegister.getTransactions();
-//}
-//
-//void Warehouse::addWorker(std::unique_ptr<Worker> worker) {
-//    workers.push_back(std::move(worker));
-//}
-//
-//const std::vector<std::unique_ptr<Worker>>& Warehouse::getWorkers() const {
-//    return workers;
-//}
-//
-//void Warehouse::addShipment(std::unique_ptr<Shipment> shipment) {
-//    for (const auto& detail : shipment->getProducts()) {
-//        for (int i = 0; i < detail.quantity; ++i) {
-//            auto product = std::make_unique<Product>(
-//                shipment->getReceivingManager(),
-//                shipment->getStorageWorker(),
-//                detail.item.getName(),
-//                detail.item.getPrice(),
-//                detail.item.getTax(),
-//                "Unknown",
-//                detail.item.getExpiryDate(),
-//                1,
-//                detail.item.getType()
-//            );
-//            addProduct(std::move(product));
-//        }
-//    }
-//    shipments.push_back(std::move(shipment));
-//}
-//
-//const std::vector<std::unique_ptr<Shipment>>& Warehouse::getShipments() const {
-//    return shipments;
-//}
-//
+#include "Warehouse.h"
+#include <nlohmann/json.hpp>
+
+//DONE
+
+Warehouse::Warehouse() {}
+
+const std::vector<std::unique_ptr<Product>>& Warehouse::getProducts() const {
+    return products;
+}
+
+const std::vector<std::unique_ptr<Shipment>>& Warehouse::getShipments() const {
+    return shipments;
+}
+
+const std::vector<std::unique_ptr<Worker>>& Warehouse::getWorkers() const {
+    return workers;
+}
+
+const std::vector<std::unique_ptr<Manager>>& Warehouse::getManagers() const {
+    return managers;
+}
+
+const std::vector<std::unique_ptr<Transaction>>& Warehouse::getTransactions() const {
+    return transactions;
+}
+
+void Warehouse::addShipment(std::unique_ptr<Shipment> shipment) {
+    for (const auto& detail : shipment->getProducts()) {
+        for (int i = 0; i < detail.quantity; ++i) {
+            auto product = std::make_unique<Product>(
+                shipment->getReceivingManager(),
+                shipment->getStorageWorker(),
+                detail.item.getName(),
+                detail.item.getPrice(),
+                detail.item.getTax(),
+                detail.item.getFirm(),
+                detail.item.getExpiryDate(),
+                detail.item.getWeight(),
+                detail.item.getType()
+            );
+            products.push_back(std::move(product));
+        }
+    }
+    shipments.push_back(std::move(shipment));
+}
+
+void Warehouse::addWorker(std::unique_ptr<Worker> worker) {
+    workers.push_back(std::move(worker));
+}
+
+void Warehouse::addManager(std::unique_ptr<Manager> manager) {
+    managers.push_back(std::move(manager));
+}
+
+void Warehouse::addTransaction(std::unique_ptr<Transaction> transaction) {
+    transactions.push_back(std::move(transaction));
+}
+
+std::vector<Product*> Warehouse::searchByName(const std::string& name) const {
+    std::vector<Product*> result;
+    for (const auto& product : products) {
+        if (product->getName() == name) {
+            result.push_back(product.get());
+        }
+    }
+    return result;
+}
+
+std::vector<Product*> Warehouse::searchByManufacturer(const std::string& manufacturer) const {
+    std::vector<Product*> result;
+    for (const auto& product : products) {
+        if (product->getFirm().getFirmName() == manufacturer) {
+            result.push_back(product.get());
+        }
+    }
+    return result;
+}
+
+std::vector<Product*> Warehouse::searchByExpiryDate(std::time_t expiryDate) const {
+    std::vector<Product*> result;
+    for (const auto& product : products) {
+        if (product->getExpiryDate() == expiryDate) {
+            result.push_back(product.get());
+        }
+    }
+    return result;
+}
+
+std::vector<Product*> Warehouse::searchByType(ProductType type) const {
+    std::vector<Product*> result;
+    for (const auto& product : products) {
+        if (product->getType() == type) {
+            result.push_back(product.get());
+        }
+    }
+    return result;
+}
+
 //void Warehouse::applyDiscounts(double discountRate, std::time_t daysBeforeExpiry) {
 //    std::time_t currentTime = std::time(nullptr);
 //    for (auto& product : products) {
-//        if (std::difftime(product->validity_term, currentTime) <= daysBeforeExpiry * 24 * 60 * 60) {
-//            product->price -= product->price * discountRate;
+//        if (std::difftime(product->getExpiryDate(), currentTime) <= daysBeforeExpiry * 24 * 60 * 60) {
+//            product->setPrice(product->getPrice() - product->getPrice() * discountRate);
 //        }
 //    }
 //}
-//
+
 //void Warehouse::generateInvoice(const std::string& invoiceNumber, const Person& seller, std::shared_ptr<Customer> customer, const std::string& path, const std::vector<Transaction*>& transactions) {
 //    if (std::dynamic_pointer_cast<Firm>(customer)) {
 //        std::vector<ShipmentDetail> products;
@@ -127,7 +133,7 @@
 //        throw std::invalid_argument("Customer is not eligible for a receipt.");
 //    }
 //}
-//
+
 //
 //void Warehouse::saveToJson(const std::string& filename) const {
 //    nlohmann::json j;
@@ -136,24 +142,24 @@
 //        const Product& product = *productPtr;
 //        nlohmann::json jProduct;
 //
-//        jProduct["type"] = static_cast<int>(product.type);
-//        jProduct["name"] = product.name;
-//        jProduct["price"] = product.price;
-//        jProduct["tax"] = product.tax;
+//        jProduct["type"] = static_cast<int>(product.getType());
+//        jProduct["name"] = product.getName();
+//        jProduct["price"] = product.getPrice();
+//        jProduct["tax"] = product.getTax();
 //        jProduct["country"] = "Unknown";
-//        jProduct["validity_term"] = product.validity_term;
-//        jProduct["weight"] = product.weight;
+//        //jProduct["validity_term"] = product.validity_term;
+//        jProduct["weight"] = product.getWeight();
 //        jProduct["sale_date"] = product.getSaleDate();
-//        jProduct["is_sold"] = !product.isAvailable();
+//        //jProduct["is_sold"] = !product.isAvailable();
 //
 //        j["products"].push_back(jProduct);
 //    }
 //
-//    for (const auto& transaction : transactionRegister.getTransactions()) {
+//    for (const auto& transaction : transactions) {
 //        nlohmann::json jTransaction;
-//        jTransaction["product_name"] = transaction->getProduct().name;
-//        jTransaction["quantity"] = transaction->getQuantity();
-//        jTransaction["summaryPrice"] = transaction->getSummaryPrice();
+//        //jTransaction["product_name"] = transaction->getProduct().name;
+//        //jTransaction["quantity"] = transaction->getQuantity();
+//        //jTransaction["summaryPrice"] = transaction->getSummaryPrice();
 //        jTransaction["worker"] = { {"name", transaction->getWorker().getName()}, {"lastName", transaction->getWorker().getLastName()} };
 //        jTransaction["customer"] = { {"name", transaction->getCustomer()->getName()}, {"lastName", transaction->getCustomer()->getLastName()} };
 //        jTransaction["transactionTime"] = transaction->getTransactionTime();
@@ -170,7 +176,7 @@
 //        jShipment["deliveryCompany"] = shipment.getDeliveryCompany();
 //        jShipment["totalcost"] = shipment.getTotalCost();
 //        jShipment["deliveryDate"] = shipment.getDeliveryDate();
-//        jShipment["customer"] = { {"name", shipment.getCustomer()->getName()}, {"lastName", shipment.getCustomer()->getLastName()} };
+//        //jShipment["customer"] = { {"name", shipment.getCustomer()->getName()}, {"lastName", shipment.getCustomer()->getLastName()} };
 //
 //        for (const auto& item : shipment.getProducts()) {
 //            nlohmann::json jItem;
@@ -235,7 +241,7 @@
 //            static_cast<ProductType>(jProduct["type"].get<int>())
 //        );
 //        product.setSaleDate(jProduct["sale_date"].get<std::time_t>());
-//        this->addProduct(std::make_unique<Product>(product));
+//        //this->addProduct(std::make_unique<Product>(product));
 //    }
 //
 //    for (const auto& jTransaction : j["transactions"]) {
