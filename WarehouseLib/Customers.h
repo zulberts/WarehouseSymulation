@@ -19,8 +19,7 @@ private:
     std::string country;
 
 public:
-    Firm(const std::string& name, const std::string& lastname, int age,
-        const std::string& firmName, const std::string& id, const std::string& country);
+    Firm(const std::string& firmName, const std::string& id, const std::string& country);
 
     std::string getFirmName() const;
     std::string getId() const;

@@ -6,8 +6,7 @@ Customer::Customer(const std::string& name, const std::string& lastname, int age
 PrivatePerson::PrivatePerson(const std::string& name, const std::string& lastname, int age)
     : Customer(name, lastname, age) {}
 
-Firm::Firm(const std::string& name, const std::string& lastname, int age,
-    const std::string& firmName, const std::string& id, const std::string& country)
+Firm::Firm(const std::string& firmName, const std::string& id, const std::string& country)
     : firmName(firmName), id(id), country(country) {}
 
 std::string Firm::getFirmName() const {
