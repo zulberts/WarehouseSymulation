@@ -1,9 +1,9 @@
-//#include <gtest/gtest.h>
-//#include "../WarehouseLib/FileCreation.h"
-//#include "../WarehouseLib/Items.h"
-//#include "../WarehouseLib/Workers.h"
-//#include "../WarehouseLib/Customers.h"
-//#include <fstream>
+#include <gtest/gtest.h>
+#include "../WarehouseLib/FileCreation.h"
+#include "../WarehouseLib/Items.h"
+#include "../WarehouseLib/Workers.h"
+#include "../WarehouseLib/Customers.h"
+#include <fstream>
 //
 //TEST(InvoiceTest, GenerateDocument) {
 //    Manager manager("Manager", "Lastname", 40, 10000.0, 10);
@@ -192,3 +192,42 @@
 //
 //    std::remove(path.c_str());  
 //}
+
+
+TEST(InvoiceTest, GenerateDocumentTest) {
+    
+    std::vector<std::unique_ptr<Transaction>> transactions;
+
+    std::time_t expiryDate = std::time(nullptr);
+    Manager manager("Grzegorz", "Król", 50, 8000.0, 25);
+    Worker worker("Franciszek", "Zielony", 45, Post::PhysicalLabor, 4000.0, 20);
+    auto customer = std::make_shared<Customer>("Jan", "Kowalski", 30);
+    Firm firm("FirmName", "FirmID", "Country");
+    Product product1(manager, worker, "Test Product1", 20.0, 0.2, firm, expiryDate, 100, ProductType::Apparel);
+    Product product2(manager, worker, "Test Product2", 100.0, 0.2, firm, expiryDate, 1000, ProductType::Electronics);
+
+    std::vector<std::pair<Product, int>> products = { {product1, 2}, {product2, 1} };
+    transactions.push_back(std::make_unique<Transaction>(products, worker, customer));
+
+    Invoice invoice("INV-001", worker, customer, transactions);
+
+    std::string path = "test_invoice.txt";
+
+    ASSERT_NO_THROW(invoice.GenerateDocument(path));
+
+    std::ifstream file(path);
+    ASSERT_TRUE(file.good());
+
+    std::string line;
+    getline(file, line); 
+    EXPECT_EQ(line, "INVOICE");
+
+    getline(file, line);
+    EXPECT_TRUE(line.find("Seller: Franciszek") == std::string::npos);
+
+    getline(file, line);
+    EXPECT_TRUE(line.find("Buyer: Jan") == std::string::npos);
+
+    file.close();
+    std::remove(path.c_str());
+}
