@@ -49,5 +49,5 @@ private:
 public:
     Product(const Manager& recManager, const Worker& storWorker, const std::string& name, double price, double tax, const Firm& firm, std::time_t expiryDate, int weight, ProductType type, int quantity);
     void updateQuantity(int quantity_sold);
-    int getQuantity();
+    int getQuantity() const;
 };

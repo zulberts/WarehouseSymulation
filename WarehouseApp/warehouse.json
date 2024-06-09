@@ -1,59 +1,213 @@
 {
+    "managers": [
+        {
+            "age": 35,
+            "experience": 20,
+            "lastName": "Doe",
+            "name": "John",
+            "salary": 5000.0
+        }
+    ],
     "products": [
         {
-            "country": "USA",
-            "is_sold": true,
-            "name": "Product1",
-            "price": 100.0,
-            "sale_date": 1717709107,
-            "tax": 20.0,
-            "type": 0,
-            "validity_term": 1720301107,
-            "weight": 1000
-        },
-        {
-            "country": "Canada",
-            "is_sold": true,
-            "name": "Product2",
-            "price": 200.0,
-            "sale_date": 1717709107,
-            "tax": 40.0,
-            "type": 1,
-            "validity_term": 1722893107,
-            "weight": 2000
-        },
-        {
-            "country": "UK",
-            "is_sold": true,
-            "name": "Product3",
-            "price": 300.0,
-            "sale_date": 1717709107,
-            "tax": 60.0,
+            "expiryDate": 1749486377,
+            "firm": "TechCorp",
+            "name": "Laptop",
+            "price": 1000.0,
+            "quantity": 18,
+            "tax": 0.2,
             "type": 2,
-            "validity_term": 1725485107,
-            "weight": 3000
+            "weight": 2
         },
         {
-            "country": "Germany",
-            "is_sold": true,
-            "name": "Product4",
-            "price": 400.0,
-            "sale_date": 1717709107,
-            "tax": 80.0,
-            "type": 3,
-            "validity_term": 1728077107,
-            "weight": 4000
-        },
-        {
-            "country": "France",
-            "is_sold": true,
-            "name": "Product5",
+            "expiryDate": 1749486377,
+            "firm": "TechCorp",
+            "name": "Phone",
             "price": 500.0,
-            "sale_date": 1717709107,
-            "tax": 100.0,
+            "quantity": 20,
+            "tax": 0.2,
+            "type": 2,
+            "weight": 1
+        },
+        {
+            "expiryDate": 1733502377,
+            "firm": "FashionCo",
+            "name": "Shirt",
+            "price": 20.0,
+            "quantity": 50,
+            "tax": 0.1,
+            "type": 3,
+            "weight": 0
+        },
+        {
+            "expiryDate": 1733502377,
+            "firm": "FashionCo",
+            "name": "Pants",
+            "price": 40.0,
+            "quantity": 60,
+            "tax": 0.1,
+            "type": 3,
+            "weight": 0
+        },
+        {
+            "expiryDate": 3123213123123,
+            "firm": "kapustasa",
+            "name": "kapusta",
+            "price": 10.0,
+            "quantity": 300,
+            "tax": 0.01,
             "type": 0,
-            "validity_term": 1730669107,
-            "weight": 5000
+            "weight": 10
+        }
+    ],
+    "shipments": [
+        {
+            "deliveryDate": 1718555177,
+            "items": [
+                {
+                    "expiryDate": 1749486377,
+                    "name": "Laptop",
+                    "price": 1000.0,
+                    "quantity": 10,
+                    "tax": 0.2,
+                    "type": 2
+                },
+                {
+                    "expiryDate": 1749486377,
+                    "name": "Phone",
+                    "price": 500.0,
+                    "quantity": 20,
+                    "tax": 0.2,
+                    "type": 2
+                }
+            ],
+            "receivingManager": {
+                "lastName": "Doe",
+                "name": "John"
+            },
+            "storageWorker": {
+                "lastName": "Smith",
+                "name": "Jane"
+            },
+            "totalcost": 24000.0
+        },
+        {
+            "deliveryDate": 1718555177,
+            "items": [
+                {
+                    "expiryDate": 1733502377,
+                    "name": "Shirt",
+                    "price": 20.0,
+                    "quantity": 50,
+                    "tax": 0.1,
+                    "type": 3
+                },
+                {
+                    "expiryDate": 1733502377,
+                    "name": "Pants",
+                    "price": 40.0,
+                    "quantity": 30,
+                    "tax": 0.1,
+                    "type": 3
+                }
+            ],
+            "receivingManager": {
+                "lastName": "Doe",
+                "name": "John"
+            },
+            "storageWorker": {
+                "lastName": "Johnson",
+                "name": "Alice"
+            },
+            "totalcost": 2420.0
+        },
+        {
+            "deliveryDate": 1718555491,
+            "items": [
+                {
+                    "expiryDate": 3123213123123,
+                    "name": "kapusta",
+                    "price": 10.0,
+                    "quantity": 300,
+                    "tax": 0.01,
+                    "type": 0
+                }
+            ],
+            "receivingManager": {
+                "lastName": "Doe",
+                "name": "John"
+            },
+            "storageWorker": {
+                "lastName": "Smith",
+                "name": "Jane"
+            },
+            "totalcost": 3030.0
+        }
+    ],
+    "transactions": [
+        {
+            "canceled": false,
+            "customer": {
+                "name": "albert"
+            },
+            "products": [
+                {
+                    "expiryDate": 1749486377,
+                    "firm": "TechCorp",
+                    "name": "Laptop",
+                    "price": 1000.0,
+                    "quantity": 10,
+                    "tax": 0.2,
+                    "type": 2,
+                    "weight": 2
+                }
+            ],
+            "transactionTime": 1717950411,
+            "worker": {
+                "lastName": "Smith",
+                "name": "Jane"
+            }
+        },
+        {
+            "canceled": false,
+            "customer": {
+                "name": "albert"
+            },
+            "products": [
+                {
+                    "expiryDate": 1733502377,
+                    "firm": "FashionCo",
+                    "name": "Pants",
+                    "price": 40.0,
+                    "quantity": 30,
+                    "tax": 0.1,
+                    "type": 3,
+                    "weight": 0
+                }
+            ],
+            "transactionTime": 1717950550,
+            "worker": {
+                "lastName": "Smith",
+                "name": "Jane"
+            }
+        }
+    ],
+    "workers": [
+        {
+            "age": 30,
+            "experience": 5,
+            "lastName": "Smith",
+            "name": "Jane",
+            "post": 1,
+            "salary": 3000.0
+        },
+        {
+            "age": 28,
+            "experience": 3,
+            "lastName": "Johnson",
+            "name": "Alice",
+            "post": 0,
+            "salary": 2500.0
         }
     ]
 }

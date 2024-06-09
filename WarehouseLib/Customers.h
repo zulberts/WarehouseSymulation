@@ -12,6 +12,20 @@ public:
     PrivatePerson(const std::string& name, const std::string& lastname, int age);
 };
 
+class FirmCustomer : public Customer {
+private:
+    std::string firmName;
+    std::string id;
+    std::string country;
+
+public:
+    FirmCustomer(const std::string& name, const std::string& id, const std::string& country);
+
+    std::string getFirmName() const;
+    std::string getId() const;
+    std::string getCountry() const;
+};
+
 class Firm {
 private:
     std::string firmName;

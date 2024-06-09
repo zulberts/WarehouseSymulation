@@ -43,6 +43,6 @@ void Product::updateQuantity(int quantity_sold) {
     quantity -= quantity_sold;
 }
 
-int Product::getQuantity() {
+int Product::getQuantity() const {
     return quantity;
 }

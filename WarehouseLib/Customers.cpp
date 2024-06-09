@@ -20,3 +20,18 @@ std::string Firm::getId() const {
 std::string Firm::getCountry() const {
     return country;
 }
+
+FirmCustomer::FirmCustomer(const std::string& name, const std::string& id, const std::string& country)
+    : Customer(name, "", 0), firmName(name), id(id), country(country) {}
+
+std::string FirmCustomer::getFirmName() const {
+    return firmName;
+}
+
+std::string FirmCustomer::getId() const {
+    return id;
+}
+
+std::string FirmCustomer::getCountry() const {
+    return country;
+}
