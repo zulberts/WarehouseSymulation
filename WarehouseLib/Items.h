@@ -37,7 +37,8 @@ public:
 struct ShipmentDetail {
     Item item;
     int quantity;
-    ShipmentDetail(const Item& item, int quantity);
+    std::time_t arrivalDate;
+    ShipmentDetail(const Item& item, int quantity, std::time_t arrivalDate);
 };
 
 class Product : public Item {
@@ -52,5 +53,6 @@ public:
 
     std::time_t getSaleDate() const;
     void setSaleDate(std::time_t newSaleDate);
-    bool isAvailable() const;
+    bool getIsSold() const;
+    //bool isAvailable() const;
 };
